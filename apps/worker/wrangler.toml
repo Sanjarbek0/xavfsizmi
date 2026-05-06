@@ -1,0 +1,11 @@
+name = "xavfsizmi-passwords"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+[[r2_buckets]]
+binding = "PWNED_PASSWORDS"
+bucket_name = "xavfsizmi-pwned-passwords"
+preview_bucket_name = "xavfsizmi-pwned-passwords-dev"
+
+[vars]
+PADDING_MAX = "800"

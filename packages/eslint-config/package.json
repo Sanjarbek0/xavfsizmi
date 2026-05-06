@@ -1,0 +1,22 @@
+{
+  "name": "@xavfsizmi/eslint-config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./base.js": "./base.js",
+    "./react.js": "./react.js"
+  },
+  "scripts": {
+    "lint": "echo 'no lint'",
+    "typecheck": "echo 'no typecheck'",
+    "test": "echo 'no tests'"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.17.0",
+    "eslint-plugin-react": "^7.37.3",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "globals": "^15.14.0",
+    "typescript-eslint": "^8.19.1"
+  }
+}
