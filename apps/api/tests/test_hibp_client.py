@@ -17,8 +17,7 @@ def settings() -> Settings:
 async def test_breached_account_returns_list(settings: Settings) -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.url.raw_path == (
-            b"/api/v3/breachedaccount/foo%40bar.com"
-            b"?truncateResponse=false&IncludeUnverified=true"
+            b"/api/v3/breachedaccount/foo%40bar.com?truncateResponse=false&IncludeUnverified=true"
         )
         assert request.headers["hibp-api-key"] == "x" * 32
         assert request.headers["user-agent"] == "xavfsizmi-test"
