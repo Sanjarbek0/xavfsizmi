@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Final, Literal, cast
+from typing import Final, Literal
 
 from fastapi import Request
 
@@ -15,7 +15,7 @@ def _coerce(value: str | None) -> Locale | None:
     if value is None:
         return None
     if value in SUPPORTED:
-        return cast(Locale, value)
+        return value
     return None
 
 
