@@ -12,6 +12,8 @@ export function SecurityPage() {
       <p>{t('security.transport.body')}</p>
       <h2>{t('security.storage.title')}</h2>
       <p>{t('security.storage.body')}</p>
+      <h2>{t('security.rate_limits.title')}</h2>
+      <p>{t('security.rate_limits.body')}</p>
     </article>
   );
 }

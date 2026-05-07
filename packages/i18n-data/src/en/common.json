@@ -6,11 +6,21 @@
   "nav": {
     "home": "Home",
     "passwords": "Passwords",
+    "breaches": "All breaches",
     "domains": "Domains",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "api": "API"
   },
   "common": {
-    "coming_soon": "This feature is on the way."
+    "coming_soon": "This feature is on the way.",
+    "loading": "Loading…",
+    "retry": "Try again",
+    "back": "Back"
+  },
+  "errors": {
+    "network": "Couldn't reach the server. Check your connection and try again.",
+    "rate_limited": "You're checking too quickly. Wait a moment and try again.",
+    "unknown": "Something went wrong. Please try again."
   },
   "home": {
     "title": "Has your email been exposed in a data breach?",
@@ -19,8 +29,19 @@
     "cta": "Check",
     "checking": "Checking…",
     "result": {
-      "clean": "Good news — no breaches found for that address.",
-      "found": "Bad news — your address was found in {{count}} breach(es)."
+      "clean": "Good news — no breaches were found for that address.",
+      "found_one": "Bad news — your address was found in 1 known breach.",
+      "found_many": "Bad news — your address was found in {{count}} known breaches.",
+      "next_steps_title": "What to do next",
+      "next_step_1": "Change your password on every site where you reuse the leaked one.",
+      "next_step_2": "Turn on two-factor authentication wherever it is offered.",
+      "next_step_3": "Use a password manager to keep every password unique."
+    },
+    "trust": {
+      "title": "How we keep this safe",
+      "k_anonymity": "Passwords never leave your browser — only the first 5 hex characters of a SHA-1 hash do.",
+      "no_sale": "We never sell or share your data.",
+      "open_design": "Our architecture is documented and reviewable."
     }
   },
   "passwords": {
@@ -28,24 +49,72 @@
     "subtitle": "Check whether a password has appeared in known breaches.",
     "privacy_note": "Your password never leaves your browser. We send only the first 5 characters of its SHA-1 hash.",
     "placeholder": "Enter a password",
+    "show": "Show",
+    "hide": "Hide",
     "cta": "Check password",
+    "checking": "Checking…",
     "result": {
       "safe": "This password was not found in our list. Still, never reuse a password across sites.",
-      "pwned": "This password has been seen {{count}} times in known breaches. Stop using it everywhere."
+      "pwned_one": "This password has been seen 1 time in known breaches. Stop using it everywhere.",
+      "pwned_many": "This password has been seen {{count}} times in known breaches. Stop using it everywhere."
     }
+  },
+  "breaches": {
+    "title": "All known breaches",
+    "subtitle": "Browse every data breach loaded into Xavfsizmi.",
+    "search_placeholder": "Filter by name or domain",
+    "empty": "No breaches match your filter.",
+    "count_label_one": "1 breach",
+    "count_label_many": "{{count}} breaches"
+  },
+  "breach": {
+    "back_to_list": "Back to all breaches",
+    "domain_label": "Domain",
+    "date_label": "Breach date",
+    "accounts_label": "Compromised accounts",
+    "data_classes_label": "What was leaked",
+    "description_label": "Summary",
+    "badges": {
+      "verified": "Verified",
+      "unverified": "Unverified",
+      "fabricated": "Fabricated",
+      "retired": "Retired",
+      "sensitive": "Sensitive",
+      "spam_list": "Spam list"
+    },
+    "no_description": "No description is available for this breach.",
+    "not_found_title": "Breach not found",
+    "not_found_body": "We couldn't find a breach with that name."
   },
   "domains": {
     "title": "Domain search",
-    "subtitle": "See every breached email address on a domain you own."
+    "subtitle": "See every breached email address on a domain you own.",
+    "placeholder": "example.com",
+    "cta": "Add domain",
+    "verification_title": "How verification works",
+    "verification_intro": "Pick the method that's easiest for you. We accept any one of the three.",
+    "method_dns_title": "DNS TXT record",
+    "method_dns_body": "Add a TXT record on your domain containing the verification token we generate.",
+    "method_email_title": "Email confirmation",
+    "method_email_body": "We send a one-time link to admin@your-domain — open it to confirm.",
+    "method_meta_title": "Meta tag",
+    "method_meta_body": "Place a <meta> tag with the verification token in the <head> of your homepage.",
+    "coming_soon": "Domain registration goes live in the next phase."
   },
   "notifications": {
     "title": "Notify me of future breaches",
-    "subtitle": "Subscribe with your email to get a heads-up if you ever appear in a future breach."
+    "subtitle": "Subscribe with your email to get a heads-up if you ever appear in a future breach.",
+    "email_placeholder": "you@example.com",
+    "cta": "Subscribe",
+    "submitting": "Submitting…",
+    "success": "Check your inbox — we sent a confirmation link.",
+    "error": "Couldn't subscribe right now. Please try again."
   },
   "footer": {
     "rights": "All rights reserved.",
     "privacy": "Privacy",
-    "security": "Security"
+    "security": "Security",
+    "api": "API"
   },
   "privacy": {
     "title": "Privacy policy",
@@ -81,9 +150,14 @@
     "storage": {
       "title": "Storage",
       "body": "Subscriber emails are stored hashed. Plaintext addresses are encrypted at rest and only accessed to send notifications."
+    },
+    "rate_limits": {
+      "title": "Rate limits",
+      "body": "Public endpoints are rate-limited per IP and protected with Cloudflare Turnstile so abuse can't drown the service."
     }
   },
   "not_found": {
+    "title": "Page not found",
     "message": "We couldn't find that page.",
     "home": "Back to home"
   }

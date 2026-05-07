@@ -2,6 +2,8 @@ import { Navigate, Route, Routes, useParams } from 'react-router';
 
 import { Layout } from './components/Layout';
 import { LocaleGate } from './components/LocaleGate';
+import { BreachDetailPage } from './routes/BreachDetailPage';
+import { BreachesPage } from './routes/BreachesPage';
 import { DomainsPage } from './routes/DomainsPage';
 import { HomePage } from './routes/HomePage';
 import { NotFoundPage } from './routes/NotFoundPage';
@@ -19,6 +21,8 @@ export function App() {
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="passwords" element={<PasswordsPage />} />
+          <Route path="breaches" element={<BreachesPage />} />
+          <Route path="breach/:name" element={<BreachDetailPage />} />
           <Route path="domains" element={<DomainsPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
           <Route path="privacy" element={<PrivacyPage />} />
