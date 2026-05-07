@@ -57,6 +57,72 @@ _PROBLEM_MESSAGES: dict[str, dict[i18n.Locale, str]] = {
         "ru": "Неверный адрес электронной почты.",
         "en": "Email address is invalid.",
     },
+    "auth.unauthorized.title": {
+        "uz": "Avtorizatsiya talab qilinadi",
+        "ru": "Требуется авторизация",
+        "en": "Authentication required",
+    },
+    "auth.unauthorized.detail": {
+        "uz": "Iltimos, hisobingizga kirib, qaytadan urinib ko'ring.",
+        "ru": "Пожалуйста, войдите в учётную запись и повторите попытку.",
+        "en": "Please sign in and try again.",
+    },
+    "auth.invalid_token.title": {
+        "uz": "Havola yaroqsiz yoki muddati o'tgan",
+        "ru": "Ссылка недействительна или просрочена",
+        "en": "Link is invalid or expired",
+    },
+    "auth.invalid_token.detail": {
+        "uz": "Havola muddati 15 daqiqa va u faqat bir marta ishlaydi. "
+        "Iltimos, yangi havola so'rang.",
+        "ru": "Ссылка действительна 15 минут и срабатывает один раз. Запросите новую ссылку.",
+        "en": "The link is valid for 15 minutes and only works once. Please request a new one.",
+    },
+    "auth.api_key.missing.title": {
+        "uz": "API kalit topilmadi",
+        "ru": "API-ключ не найден",
+        "en": "API key missing",
+    },
+    "auth.api_key.missing.detail": {
+        "uz": "So'rovni `X-API-Key` sarlavhasi bilan yuboring.",
+        "ru": "Передайте ключ в заголовке `X-API-Key`.",
+        "en": "Send the key in the `X-API-Key` header.",
+    },
+    "auth.api_key.invalid.title": {
+        "uz": "API kalit yaroqsiz",
+        "ru": "Недействительный API-ключ",
+        "en": "API key invalid",
+    },
+    "auth.api_key.invalid.detail": {
+        "uz": "Kalit topilmadi yoki bekor qilingan.",
+        "ru": "Ключ не найден или отозван.",
+        "en": "The key was not found or has been revoked.",
+    },
+    "domain.invalid.title": {
+        "uz": "Domen noto'g'ri",
+        "ru": "Неверный домен",
+        "en": "Invalid domain",
+    },
+    "domain.invalid.detail": {
+        "uz": "Domen nomi to'g'ri formatda emas.",
+        "ru": "Имя домена в неверном формате.",
+        "en": "The domain name is not in a valid format.",
+    },
+    "domain.duplicate.title": {
+        "uz": "Domen allaqachon ro'yxatdan o'tgan",
+        "ru": "Домен уже зарегистрирован",
+        "en": "Domain already registered",
+    },
+    "domain.not_found.title": {
+        "uz": "Domen topilmadi",
+        "ru": "Домен не найден",
+        "en": "Domain not found",
+    },
+    "domain.verification_failed.title": {
+        "uz": "Tasdiqlash muvaffaqiyatsiz",
+        "ru": "Подтверждение не пройдено",
+        "en": "Verification failed",
+    },
 }
 
 

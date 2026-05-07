@@ -33,8 +33,10 @@ async function readProblem(res: Response): Promise<ProblemDetails | undefined> {
 async function callJson<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...(init?.headers ?? {}) },
+    credentials: 'include',
     ...init,
   });
+  if (res.status === 204) return undefined as T;
   if (!res.ok) {
     const problem = await readProblem(res);
     const message = problem?.detail ?? problem?.title ?? `HTTP ${res.status}`;
@@ -172,4 +174,138 @@ export async function subscribeNotifications(
     method: 'POST',
     body: JSON.stringify({ email, locale, turnstileToken: turnstileToken ?? null }),
   });
+}
+
+export interface AuthRequestResponse {
+  status: string;
+  message: string;
+  locale: string;
+}
+
+export interface CurrentUser {
+  user_id: string;
+  email: string;
+  is_admin: boolean;
+  last_login_at: string | null;
+}
+
+export async function requestMagicLink(
+  email: string,
+  locale: string,
+  turnstileToken?: string | null,
+  redirectPath?: string,
+): Promise<AuthRequestResponse> {
+  return callJson<AuthRequestResponse>('/v1/auth/request', {
+    method: 'POST',
+    body: JSON.stringify({
+      email,
+      locale,
+      turnstileToken: turnstileToken ?? null,
+      redirectPath: redirectPath ?? null,
+    }),
+  });
+}
+
+export async function verifyMagicLink(token: string): Promise<CurrentUser> {
+  const res = await callJson<{
+    status: string;
+    user_id: string;
+    email: string;
+    is_admin: boolean;
+  }>('/v1/auth/verify', {
+    method: 'POST',
+    body: JSON.stringify({ token }),
+  });
+  return {
+    user_id: res.user_id,
+    email: res.email,
+    is_admin: res.is_admin,
+    last_login_at: null,
+  };
+}
+
+export async function logout(): Promise<void> {
+  await callJson<{ status: string }>('/v1/auth/logout', { method: 'POST' });
+}
+
+export async function fetchMe(): Promise<CurrentUser | null> {
+  try {
+    return await callJson<CurrentUser>('/v1/auth/me');
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) return null;
+    throw err;
+  }
+}
+
+export type ApiKeyTier = 'free' | 'pro' | 'high_rpm';
+
+export interface ApiKeyRow {
+  id: string;
+  label: string;
+  key_prefix: string;
+  tier: ApiKeyTier;
+  is_revoked: boolean;
+  created_at: string;
+  last_used_at: string | null;
+}
+
+export async function listApiKeys(): Promise<ApiKeyRow[]> {
+  const res = await callJson<{ items: ApiKeyRow[] }>('/v1/account/api-keys');
+  return res.items;
+}
+
+export async function createApiKey(label: string, tier: ApiKeyTier): Promise<{ key: ApiKeyRow; plaintext: string }> {
+  return callJson<{ key: ApiKeyRow; plaintext: string }>('/v1/account/api-keys', {
+    method: 'POST',
+    body: JSON.stringify({ label, tier }),
+  });
+}
+
+export async function revokeApiKey(id: string): Promise<void> {
+  await callJson<void>(`/v1/account/api-keys/${id}`, { method: 'DELETE' });
+}
+
+export type DomainMethod = 'dns_txt' | 'email' | 'meta_tag';
+
+export interface DomainRow {
+  id: string;
+  name: string;
+  verification_method: DomainMethod;
+  verification_token: string;
+  verified_at: string | null;
+  created_at: string;
+  instructions: Record<string, string>;
+}
+
+export async function listDomains(): Promise<DomainRow[]> {
+  const res = await callJson<{ items: DomainRow[] }>('/v1/account/domains');
+  return res.items;
+}
+
+export async function registerDomain(payload: {
+  name: string;
+  verification_method: DomainMethod;
+  locale: string;
+  notify_email?: string;
+}): Promise<DomainRow> {
+  const res = await callJson<{ domain: DomainRow }>('/v1/account/domains', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+  return res.domain;
+}
+
+export async function verifyDomain(id: string, submittedToken?: string): Promise<{
+  status: 'verified' | 'failed' | 'pending';
+  detail: string | null;
+  domain: DomainRow;
+}> {
+  return callJson(`/v1/account/domains/${id}/verify`, {
+    method: 'POST',
+    body: JSON.stringify({ submitted_token: submittedToken ?? null }),
+  });
+}
+
+export async function deleteDomain(id: string): Promise<void> {
+  await callJson<void>(`/v1/account/domains/${id}`, { method: 'DELETE' });
 }
