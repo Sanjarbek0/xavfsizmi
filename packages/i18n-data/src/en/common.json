@@ -1,0 +1,90 @@
+{
+  "brand": {
+    "name": "Xavfsizmi",
+    "tagline": "Is your data safe?"
+  },
+  "nav": {
+    "home": "Home",
+    "passwords": "Passwords",
+    "domains": "Domains",
+    "notifications": "Notifications"
+  },
+  "common": {
+    "coming_soon": "This feature is on the way."
+  },
+  "home": {
+    "title": "Has your email been exposed in a data breach?",
+    "subtitle": "Enter your email address to find out if it has appeared in any of the breaches we know about.",
+    "email_placeholder": "you@example.com",
+    "cta": "Check",
+    "checking": "Checking…",
+    "result": {
+      "clean": "Good news — no breaches found for that address.",
+      "found": "Bad news — your address was found in {{count}} breach(es)."
+    }
+  },
+  "passwords": {
+    "title": "Has this password been seen in a breach?",
+    "subtitle": "Check whether a password has appeared in known breaches.",
+    "privacy_note": "Your password never leaves your browser. We send only the first 5 characters of its SHA-1 hash.",
+    "placeholder": "Enter a password",
+    "cta": "Check password",
+    "result": {
+      "safe": "This password was not found in our list. Still, never reuse a password across sites.",
+      "pwned": "This password has been seen {{count}} times in known breaches. Stop using it everywhere."
+    }
+  },
+  "domains": {
+    "title": "Domain search",
+    "subtitle": "See every breached email address on a domain you own."
+  },
+  "notifications": {
+    "title": "Notify me of future breaches",
+    "subtitle": "Subscribe with your email to get a heads-up if you ever appear in a future breach."
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "privacy": "Privacy",
+    "security": "Security"
+  },
+  "privacy": {
+    "title": "Privacy policy",
+    "intro": "This page explains what data we collect, what we don't, and what your rights are.",
+    "what_we_collect": {
+      "title": "What we collect",
+      "body": "We collect only the email addresses you submit for lookups, hashed for caching, plus standard request logs."
+    },
+    "what_we_dont": {
+      "title": "What we never collect",
+      "body": "We never receive your full passwords. We never sell your data. We never share your address with third parties beyond the necessary breach-data provider."
+    },
+    "cookies": {
+      "title": "Cookies",
+      "body": "We use a single cookie to remember your language preference. Analytics cookies are opt-in."
+    },
+    "contact": {
+      "title": "Contact",
+      "body": "If you have questions, write to privacy@xavfsizmi.example."
+    }
+  },
+  "security": {
+    "title": "How we protect your data",
+    "intro": "We were designed to be safe to use even by people who are already worried.",
+    "k_anonymity": {
+      "title": "k-anonymity",
+      "body": "When you check a password, only the first 5 characters of its SHA-1 hash leave your browser. The matching is done locally against the response."
+    },
+    "transport": {
+      "title": "Transport",
+      "body": "All traffic is served over TLS. We disable old TLS versions and weak ciphers."
+    },
+    "storage": {
+      "title": "Storage",
+      "body": "Subscriber emails are stored hashed. Plaintext addresses are encrypted at rest and only accessed to send notifications."
+    }
+  },
+  "not_found": {
+    "message": "We couldn't find that page.",
+    "home": "Back to home"
+  }
+}

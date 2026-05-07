@@ -1,0 +1,90 @@
+{
+  "brand": {
+    "name": "Xavfsizmi",
+    "tagline": "Ma'lumotlaringiz xavfsizmi?"
+  },
+  "nav": {
+    "home": "Bosh sahifa",
+    "passwords": "Parollar",
+    "domains": "Domenlar",
+    "notifications": "Bildirishnomalar"
+  },
+  "common": {
+    "coming_soon": "Bu funksiya yaqinda ishlay boshlaydi."
+  },
+  "home": {
+    "title": "Sizning emailingiz sızıntıga tushganmi?",
+    "subtitle": "Email manzilingizni kiriting va u biz bilgan sızıntılarda bormi-yo'qligini tekshiring.",
+    "email_placeholder": "siz@misol.uz",
+    "cta": "Tekshirish",
+    "checking": "Tekshirilmoqda…",
+    "result": {
+      "clean": "Xayrli xabar — bu manzil sızıntılarda topilmadi.",
+      "found": "Yomon xabar — manzilingiz {{count}} ta sızıntıda topildi."
+    }
+  },
+  "passwords": {
+    "title": "Bu parol sızıntılarda uchraganmi?",
+    "subtitle": "Parolingiz ma'lum sızıntılarda paydo bo'lganmi yoki yo'qligini tekshiring.",
+    "privacy_note": "Parolingiz brauzerdan chiqib ketmaydi — biz faqat SHA-1 xeshining birinchi 5 ta belgisini yuboramiz.",
+    "placeholder": "Parolingizni kiriting",
+    "cta": "Parolni tekshirish",
+    "result": {
+      "safe": "Bu parol bizning ro'yxatimizda topilmadi. Lekin har holda, har saytda alohida parol ishlating.",
+      "pwned": "Bu parol ma'lum sızıntılarda {{count}} marta uchragan. Uni darhol o'zgartiring."
+    }
+  },
+  "domains": {
+    "title": "Domen bo'yicha qidiruv",
+    "subtitle": "O'zingizga tegishli domendagi barcha sızıntıga tushgan email manzillarni ko'ring."
+  },
+  "notifications": {
+    "title": "Yangi sızıntılar haqida xabardor qiling",
+    "subtitle": "Email manzilingiz keyingi sızıntılarda paydo bo'lsa, sizga xabar yuboramiz."
+  },
+  "footer": {
+    "rights": "Barcha huquqlar himoyalangan.",
+    "privacy": "Maxfiylik",
+    "security": "Xavfsizlik"
+  },
+  "privacy": {
+    "title": "Maxfiylik siyosati",
+    "intro": "Bu sahifa biz qanday ma'lumot to'plashimiz, nimalarni hech qachon to'plamasligimiz va sizning huquqlaringizni tushuntiradi.",
+    "what_we_collect": {
+      "title": "Biz nima to'playmiz",
+      "body": "Biz faqat siz tekshirish uchun yuborgan email manzillarni keshlash uchun xeshlangan holda va standart so'rov loglarini saqlaymiz."
+    },
+    "what_we_dont": {
+      "title": "Biz hech qachon nimalarni to'plamaymiz",
+      "body": "Biz to'liq parollaringizni hech qachon olmaymiz. Ma'lumotlaringizni sotmaymiz. Manzillaringizni zarur sızıntı-ma'lumot provayderidan tashqari uchinchi shaxslar bilan bo'lishmaymiz."
+    },
+    "cookies": {
+      "title": "Cookie-fayllari",
+      "body": "Biz til tanlovingizni eslab qolish uchun bitta cookie ishlatamiz. Analitik cookie-lar faqat sizning roziligingiz bilan yoqiladi."
+    },
+    "contact": {
+      "title": "Aloqa",
+      "body": "Savollaringiz bo'lsa, privacy@xavfsizmi.example manziliga yozing."
+    }
+  },
+  "security": {
+    "title": "Ma'lumotlaringizni qanday himoya qilamiz",
+    "intro": "Loyihamiz hatto allaqachon tashvishlanayotgan foydalanuvchilar uchun ham xavfsiz bo'lishga mo'ljallangan.",
+    "k_anonymity": {
+      "title": "k-anonymity (qisman noma'lumlik)",
+      "body": "Parolni tekshirganingizda brauzerdan faqat uning SHA-1 xeshining birinchi 5 ta belgisi chiqib ketadi. Solishtirish javob ichida lokal ravishda amalga oshiriladi."
+    },
+    "transport": {
+      "title": "Tarmoq orqali uzatish",
+      "body": "Barcha trafik TLS orqali shifrlanadi. Eskirgan TLS versiyalari va zaif shifrlar o'chirib qo'yilgan."
+    },
+    "storage": {
+      "title": "Saqlash",
+      "body": "Obunachilar emaillari xeshlangan holda saqlanadi. Ochiq matn manzillar diskda shifrlanadi va faqat bildirishnoma yuborish uchun ochiladi."
+    }
+  },
+  "not_found": {
+    "message": "Bunday sahifani topa olmadik.",
+    "home": "Bosh sahifaga qaytish"
+  }
+}
