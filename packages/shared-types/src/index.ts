@@ -8,12 +8,32 @@ export interface BreachSummary {
   pwnCount?: number;
   isVerified?: boolean;
   isSensitive?: boolean;
+  isFabricated?: boolean;
+  isRetired?: boolean;
+  isSpamList?: boolean;
+  description?: string;
   dataClasses?: string[];
+  logoPath?: string;
 }
 
 export interface AccountLookupResponse {
   email: string;
   breaches: BreachSummary[];
+  cached?: boolean;
+}
+
+export interface PasteSummary {
+  source: string;
+  id: string;
+  title?: string;
+  date?: string;
+  emailCount?: number;
+}
+
+export interface PasteLookupResponse {
+  email: string;
+  pastes: PasteSummary[];
+  cached?: boolean;
 }
 
 export interface PwnedPasswordRangeMatch {
@@ -34,15 +54,27 @@ export interface ProblemDetails {
   instance?: string;
 }
 
+export interface NotificationSubscribeRequest {
+  email: string;
+  locale?: Locale;
+  turnstileToken?: string | null;
+}
+
+export interface NotificationSubscribeResponse {
+  message: string;
+}
+
 export interface DomainSummary {
   id: string;
   domain: string;
   verifiedAt?: string;
-  verifyMethod?: 'dns_txt' | 'email' | 'meta';
+  verifyMethod?: 'dns_txt' | 'email' | 'meta_tag';
 }
 
+export type ApiKeyTierName = 'free' | 'pro' | 'high_rpm';
+
 export interface ApiKeyTier {
-  name: 'free' | 'pro' | 'high_rpm';
+  name: ApiKeyTierName;
   rpm: number;
   monthlyCap?: number;
 }
