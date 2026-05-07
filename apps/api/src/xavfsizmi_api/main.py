@@ -10,7 +10,16 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
 from .core.errors import install_problem_handlers
-from .routers import breaches, health, notifications, passwords
+from .routers import (
+    api_keys,
+    auth,
+    breaches,
+    domains,
+    health,
+    notifications,
+    passwords,
+    public_api,
+)
 
 
 @asynccontextmanager
@@ -39,6 +48,10 @@ def create_app() -> FastAPI:
     app.include_router(breaches.router, prefix="/v1")
     app.include_router(passwords.router, prefix="/v1")
     app.include_router(notifications.router, prefix="/v1")
+    app.include_router(auth.router, prefix="/v1")
+    app.include_router(api_keys.router, prefix="/v1")
+    app.include_router(domains.router, prefix="/v1")
+    app.include_router(public_api.router, prefix="/v1")
     return app
 
 

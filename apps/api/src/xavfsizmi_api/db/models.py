@@ -23,12 +23,16 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    Uuid,
     func,
 )
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
+
+# SQLite ignores autoincrement on BIGINT columns, so for portability we let it
+# use plain INTEGER (sqlite3 ROWID semantics). Postgres still gets BIGINT.
+_BIGINT_AUTOINCR = BigInteger().with_variant(Integer(), "sqlite")
 
 
 def _uuid() -> uuid.UUID:
@@ -67,7 +71,7 @@ class Branding(Base):
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=_uuid)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=_uuid)
     email: Mapped[str] = mapped_column(String(254), nullable=False, unique=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     is_blocked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
@@ -82,9 +86,9 @@ class MagicLinkToken(Base):
 
     __tablename__ = "magic_link_tokens"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=_uuid)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=_uuid)
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
+        Uuid(as_uuid=True),
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
@@ -100,9 +104,9 @@ class MagicLinkToken(Base):
 class ApiKey(Base):
     __tablename__ = "api_keys"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=_uuid)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=_uuid)
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
+        Uuid(as_uuid=True),
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
@@ -127,9 +131,9 @@ class ApiKeyUsage(Base):
 
     __tablename__ = "api_key_usage"
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(_BIGINT_AUTOINCR, primary_key=True, autoincrement=True)
     api_key_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
+        Uuid(as_uuid=True),
         ForeignKey("api_keys.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
@@ -145,9 +149,9 @@ class Domain(Base):
 
     __tablename__ = "domains"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=_uuid)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=_uuid)
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
+        Uuid(as_uuid=True),
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
@@ -174,7 +178,7 @@ class NotificationSubscription(Base):
 
     __tablename__ = "notification_subs"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=_uuid)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=_uuid)
     email: Mapped[str] = mapped_column(String(254), nullable=False)
     locale: Mapped[str] = mapped_column(String(8), nullable=False, default="uz")
     confirm_token_hash: Mapped[str | None] = mapped_column(String(128), nullable=True)
@@ -225,9 +229,9 @@ class PasteCache(Base):
 class AuditLog(Base):
     __tablename__ = "audit_log"
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(_BIGINT_AUTOINCR, primary_key=True, autoincrement=True)
     actor_user_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True),
+        Uuid(as_uuid=True),
         ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True,
         index=True,
