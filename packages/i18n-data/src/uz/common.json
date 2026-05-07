@@ -1,66 +1,135 @@
 {
   "brand": {
     "name": "Xavfsizmi",
-    "tagline": "Ma'lumotlaringiz xavfsizmi?"
+    "tagline": "Sizning ma'lumotlaringiz xavfsizmi?"
   },
   "nav": {
-    "home": "Bosh sahifa",
+    "home": "Asosiy",
     "passwords": "Parollar",
+    "breaches": "Barcha sızıntılar",
     "domains": "Domenlar",
-    "notifications": "Bildirishnomalar"
+    "notifications": "Bildirishnomalar",
+    "api": "API"
   },
   "common": {
-    "coming_soon": "Bu funksiya yaqinda ishlay boshlaydi."
+    "coming_soon": "Bu funksiya yo'lda.",
+    "loading": "Yuklanmoqda…",
+    "retry": "Qayta urinib ko'ring",
+    "back": "Orqaga"
+  },
+  "errors": {
+    "network": "Serverga ulanib bo'lmadi. Aloqani tekshiring va qayta urinib ko'ring.",
+    "rate_limited": "Juda tez tekshiryapsiz. Bir oz kutib turing va qayta urinib ko'ring.",
+    "unknown": "Nimadir noto'g'ri ketdi. Iltimos, qayta urinib ko'ring."
   },
   "home": {
-    "title": "Sizning emailingiz sızıntıga tushganmi?",
-    "subtitle": "Email manzilingizni kiriting va u biz bilgan sızıntılarda bormi-yo'qligini tekshiring.",
-    "email_placeholder": "siz@misol.uz",
+    "title": "Sizning email manzilingiz sızıntıga tushganmi?",
+    "subtitle": "Email manzilingizni kiriting va u bizga ma'lum bo'lgan sızıntılardan birortasida uchragan-uchramaganini bilib oling.",
+    "email_placeholder": "siz@misol.com",
     "cta": "Tekshirish",
     "checking": "Tekshirilmoqda…",
     "result": {
-      "clean": "Xayrli xabar — bu manzil sızıntılarda topilmadi.",
-      "found": "Yomon xabar — manzilingiz {{count}} ta sızıntıda topildi."
+      "clean": "Yaxshi yangilik — bu manzil bo'yicha hech qanday sızıntı topilmadi.",
+      "found_one": "Yomon yangilik — manzilingiz 1 ma'lum sızıntıda topildi.",
+      "found_many": "Yomon yangilik — manzilingiz {{count}} ta ma'lum sızıntıda topildi.",
+      "next_steps_title": "Endi nima qilish kerak",
+      "next_step_1": "Sızıntıdagi parolni qaerda ishlatgan bo'lsangiz, hammasida o'zgartiring.",
+      "next_step_2": "Iloji bo'lsa, har joyda ikki bosqichli autentifikatsiyani yoqing.",
+      "next_step_3": "Har bir parolingiz noyob bo'lishi uchun parol menejeridan foydalaning."
+    },
+    "trust": {
+      "title": "Buni qanday xavfsiz qilamiz",
+      "k_anonymity": "Parollar brauzeringizdan chiqib ketmaydi — faqat SHA-1 hashning birinchi 5 ta hex belgisi yuboriladi.",
+      "no_sale": "Biz hech qachon ma'lumotlaringizni sotmaymiz va boshqalarga bermaymiz.",
+      "open_design": "Arxitekturamiz hujjatlashtirilgan va ko'rib chiqish uchun ochiq."
     }
   },
   "passwords": {
-    "title": "Bu parol sızıntılarda uchraganmi?",
-    "subtitle": "Parolingiz ma'lum sızıntılarda paydo bo'lganmi yoki yo'qligini tekshiring.",
-    "privacy_note": "Parolingiz brauzerdan chiqib ketmaydi — biz faqat SHA-1 xeshining birinchi 5 ta belgisini yuboramiz.",
-    "placeholder": "Parolingizni kiriting",
+    "title": "Bu parol sızıntıda uchraganmi?",
+    "subtitle": "Parol ma'lum sızıntılarda uchragan-uchramaganini tekshiring.",
+    "privacy_note": "Parolingiz brauzerdan chiqib ketmaydi. Biz faqat SHA-1 hashning birinchi 5 ta belgisini yuboramiz.",
+    "placeholder": "Parolni kiriting",
+    "show": "Ko'rsatish",
+    "hide": "Yashirish",
     "cta": "Parolni tekshirish",
+    "checking": "Tekshirilmoqda…",
     "result": {
-      "safe": "Bu parol bizning ro'yxatimizda topilmadi. Lekin har holda, har saytda alohida parol ishlating.",
-      "pwned": "Bu parol ma'lum sızıntılarda {{count}} marta uchragan. Uni darhol o'zgartiring."
+      "safe": "Bu parol bizning ro'yxatimizda topilmadi. Shunga qaramay, parolni saytlar bo'yicha qayta ishlatmang.",
+      "pwned_one": "Bu parol ma'lum sızıntılarda 1 marta uchragan. Uni hamma joyda ishlatishni to'xtating.",
+      "pwned_many": "Bu parol ma'lum sızıntılarda {{count}} marta uchragan. Uni hamma joyda ishlatishni to'xtating."
     }
+  },
+  "breaches": {
+    "title": "Barcha ma'lum sızıntılar",
+    "subtitle": "Xavfsizmi bazasiga yuklangan har bir sızıntı bilan tanishing.",
+    "search_placeholder": "Nom yoki domen bo'yicha filtrlash",
+    "empty": "Filtringizga mos sızıntılar topilmadi.",
+    "count_label_one": "1 ta sızıntı",
+    "count_label_many": "{{count}} ta sızıntı"
+  },
+  "breach": {
+    "back_to_list": "Barcha sızıntılarga qaytish",
+    "domain_label": "Domen",
+    "date_label": "Sızıntı sanasi",
+    "accounts_label": "Buzilgan akkauntlar",
+    "data_classes_label": "Nimalar oshkor bo'lgan",
+    "description_label": "Qisqacha",
+    "badges": {
+      "verified": "Tasdiqlangan",
+      "unverified": "Tasdiqlanmagan",
+      "fabricated": "To'qib chiqarilgan",
+      "retired": "Olib tashlangan",
+      "sensitive": "Maxfiy",
+      "spam_list": "Spam ro'yxati"
+    },
+    "no_description": "Bu sızıntı uchun tavsif mavjud emas.",
+    "not_found_title": "Sızıntı topilmadi",
+    "not_found_body": "Bu nom bilan sızıntı topa olmadik."
   },
   "domains": {
     "title": "Domen bo'yicha qidiruv",
-    "subtitle": "O'zingizga tegishli domendagi barcha sızıntıga tushgan email manzillarni ko'ring."
+    "subtitle": "O'zingizga tegishli domendagi har bir buzilgan email manzilini ko'ring.",
+    "placeholder": "misol.uz",
+    "cta": "Domen qo'shish",
+    "verification_title": "Tasdiqlash qanday ishlaydi",
+    "verification_intro": "O'zingizga qulay usulni tanlang. Uchta usuldan birortasi yetarli.",
+    "method_dns_title": "DNS TXT yozuvi",
+    "method_dns_body": "Domeningizga biz bergan tasdiqlash tokenini o'z ichiga olgan TXT yozuvini qo'shing.",
+    "method_email_title": "Email orqali tasdiqlash",
+    "method_email_body": "Biz admin@sizning-domeningiz manziliga bir martalik havola yuboramiz — uni ochib tasdiqlang.",
+    "method_meta_title": "Meta yorlig'i",
+    "method_meta_body": "Bosh sahifaning <head> qismiga tasdiqlash tokeni bilan <meta> yorlig'ini qo'ying.",
+    "coming_soon": "Domenlarni ro'yxatdan o'tkazish keyingi bosqichda ishga tushadi."
   },
   "notifications": {
-    "title": "Yangi sızıntılar haqida xabardor qiling",
-    "subtitle": "Email manzilingiz keyingi sızıntılarda paydo bo'lsa, sizga xabar yuboramiz."
+    "title": "Kelajakdagi sızıntılar haqida xabar berish",
+    "subtitle": "Email manzilingizni obuna qiling — agar siz kelajakdagi sızıntıda paydo bo'lsangiz, sizga xabar yuboramiz.",
+    "email_placeholder": "siz@misol.com",
+    "cta": "Obuna bo'lish",
+    "submitting": "Yuborilmoqda…",
+    "success": "Pochtangizni tekshiring — biz tasdiqlash havolasini yubordik.",
+    "error": "Hozircha obuna bo'lib bo'lmadi. Iltimos, qayta urinib ko'ring."
   },
   "footer": {
     "rights": "Barcha huquqlar himoyalangan.",
     "privacy": "Maxfiylik",
-    "security": "Xavfsizlik"
+    "security": "Xavfsizlik",
+    "api": "API"
   },
   "privacy": {
     "title": "Maxfiylik siyosati",
-    "intro": "Bu sahifa biz qanday ma'lumot to'plashimiz, nimalarni hech qachon to'plamasligimiz va sizning huquqlaringizni tushuntiradi.",
+    "intro": "Bu sahifada qanday ma'lumotlarni yig'amiz, qaysilarini yig'maymiz va sizning huquqlaringiz nima ekanligi aytib o'tilgan.",
     "what_we_collect": {
-      "title": "Biz nima to'playmiz",
-      "body": "Biz faqat siz tekshirish uchun yuborgan email manzillarni keshlash uchun xeshlangan holda va standart so'rov loglarini saqlaymiz."
+      "title": "Nimalarni yig'amiz",
+      "body": "Biz faqat siz qidiruv uchun yuborgan email manzillarini (keshlash uchun hashlangan ko'rinishda) va standart so'rov loglarini yig'amiz."
     },
     "what_we_dont": {
-      "title": "Biz hech qachon nimalarni to'plamaymiz",
-      "body": "Biz to'liq parollaringizni hech qachon olmaymiz. Ma'lumotlaringizni sotmaymiz. Manzillaringizni zarur sızıntı-ma'lumot provayderidan tashqari uchinchi shaxslar bilan bo'lishmaymiz."
+      "title": "Nimalarni hech qachon yig'maymiz",
+      "body": "Biz hech qachon to'liq parollaringizni olmaymiz. Ma'lumotlaringizni sotmaymiz. Manzilingizni kerakli sızıntı ma'lumotlari yetkazib beruvchidan tashqari hech kim bilan bo'lishmaymiz."
     },
     "cookies": {
-      "title": "Cookie-fayllari",
-      "body": "Biz til tanlovingizni eslab qolish uchun bitta cookie ishlatamiz. Analitik cookie-lar faqat sizning roziligingiz bilan yoqiladi."
+      "title": "Cookie fayllar",
+      "body": "Biz til afzalligingizni eslab qolish uchun bitta cookie ishlatamiz. Analitika cookie'lari faqat sizning roziligingiz bilan."
     },
     "contact": {
       "title": "Aloqa",
@@ -69,22 +138,27 @@
   },
   "security": {
     "title": "Ma'lumotlaringizni qanday himoya qilamiz",
-    "intro": "Loyihamiz hatto allaqachon tashvishlanayotgan foydalanuvchilar uchun ham xavfsiz bo'lishga mo'ljallangan.",
+    "intro": "Loyiha xavotirda bo'lgan odamlar ham xavfsiz foydalana oladigan tarzda yaratilgan.",
     "k_anonymity": {
-      "title": "k-anonymity (qisman noma'lumlik)",
-      "body": "Parolni tekshirganingizda brauzerdan faqat uning SHA-1 xeshining birinchi 5 ta belgisi chiqib ketadi. Solishtirish javob ichida lokal ravishda amalga oshiriladi."
+      "title": "k-anonymity (k-anonimlik)",
+      "body": "Parolni tekshirganingizda brauzeringizdan faqat SHA-1 hashning birinchi 5 ta belgisi chiqib ketadi. Mos kelishi tekshiruvi javob asosida lokal bajariladi."
     },
     "transport": {
-      "title": "Tarmoq orqali uzatish",
-      "body": "Barcha trafik TLS orqali shifrlanadi. Eskirgan TLS versiyalari va zaif shifrlar o'chirib qo'yilgan."
+      "title": "Aloqa kanali",
+      "body": "Barcha trafik TLS orqali xizmat ko'rsatiladi. Eski TLS versiyalari va zaif shifrlarni o'chirib qo'yganmiz."
     },
     "storage": {
       "title": "Saqlash",
-      "body": "Obunachilar emaillari xeshlangan holda saqlanadi. Ochiq matn manzillar diskda shifrlanadi va faqat bildirishnoma yuborish uchun ochiladi."
+      "body": "Obunachilarning email manzillari hashlangan ko'rinishda saqlanadi. Ochiq matn manzillari sof shaklda emas, faqat bildirishnoma yuborish uchun ochiladi."
+    },
+    "rate_limits": {
+      "title": "Rate-limit",
+      "body": "Ommaviy endpointlar IP bo'yicha cheklangan va Cloudflare Turnstile bilan himoyalangan, shu sababli suiiste'mol xizmatni cho'ktirib qo'yolmaydi."
     }
   },
   "not_found": {
-    "message": "Bunday sahifani topa olmadik.",
+    "title": "Sahifa topilmadi",
+    "message": "Bu sahifani topa olmadik.",
     "home": "Bosh sahifaga qaytish"
   }
 }

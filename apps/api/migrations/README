@@ -1,0 +1,9 @@
+Alembic migrations for xavfsizmi-api.
+
+Run from apps/api/:
+  uv run alembic upgrade head      # apply all
+  uv run alembic revision --autogenerate -m "describe change"
+  uv run alembic downgrade -1      # roll back one step
+
+Migrations are applied automatically by the API container's entrypoint in production;
+in local dev run `uv run alembic upgrade head` once after `docker compose up -d`.

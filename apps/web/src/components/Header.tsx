@@ -25,6 +25,9 @@ export function Header() {
           <NavLink to={`/${locale}/passwords`} className={navClass}>
             {t('nav.passwords')}
           </NavLink>
+          <NavLink to={`/${locale}/breaches`} className={navClass}>
+            {t('nav.breaches')}
+          </NavLink>
           <NavLink to={`/${locale}/domains`} className={navClass}>
             {t('nav.domains')}
           </NavLink>
