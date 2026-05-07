@@ -23,6 +23,8 @@ dependencies = [
     "structlog>=24.4.0",
     "tenacity>=9.0.0",
     "python-dateutil>=2.9.0.post0",
+    "dnspython>=2.7.0",
+    "anyio>=4.7.0",
 ]
 
 [dependency-groups]
@@ -34,6 +36,7 @@ dev = [
     "ruff>=0.8.6",
     "mypy>=1.14.1",
     "types-python-dateutil>=2.9.0.20241206",
+    "aiosqlite>=0.20.0",
 ]
 
 [build-system]

@@ -1,11 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import { Link, NavLink, useParams } from 'react-router';
 
+import { useAuth } from '../lib/auth-context';
 import { LocaleSwitcher } from './LocaleSwitcher';
 
 export function Header() {
   const { t } = useTranslation();
   const { locale = 'uz' } = useParams();
+  const { user } = useAuth();
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
     `rounded px-3 py-2 text-sm font-medium ${
@@ -35,7 +37,18 @@ export function Header() {
             {t('nav.notifications')}
           </NavLink>
         </nav>
-        <LocaleSwitcher />
+        <div className="flex items-center gap-2">
+          {user ? (
+            <NavLink to={`/${locale}/account`} className={navClass}>
+              {t('auth.account_link')}
+            </NavLink>
+          ) : (
+            <NavLink to={`/${locale}/sign-in`} className={navClass}>
+              {t('auth.sign_in_link')}
+            </NavLink>
+          )}
+          <LocaleSwitcher />
+        </div>
       </div>
     </header>
   );

@@ -1,22 +1,34 @@
 """Shared pytest fixtures.
 
-These provide an in-memory fake Redis and dependency overrides that swap the
-HIBPClient + TurnstileVerifier with controllable doubles so router tests don't
-need network or a live Redis.
+These provide an in-memory fake Redis, an in-memory fake email sender, an
+in-memory fake domain verifier, and a real-but-isolated SQLite-backed async
+session so router tests can hit the DB without Postgres.
 """
 
 from __future__ import annotations
 
 import time
-from collections.abc import Iterator
+from collections.abc import AsyncIterator, Iterator
 from typing import Any
 
 import pytest
+import pytest_asyncio
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from xavfsizmi_api.deps import hibp_client_dep, redis_dep, turnstile_dep
+from xavfsizmi_api.db.base import Base
+from xavfsizmi_api.db.session import get_session
+from xavfsizmi_api.deps import (
+    domain_verifier_dep,
+    email_sender_dep,
+    hibp_client_dep,
+    redis_dep,
+    turnstile_dep,
+)
 from xavfsizmi_api.main import app as real_app
+from xavfsizmi_api.services.domains import VerificationResult
+from xavfsizmi_api.services.email import EmailMessageSpec, InMemoryEmailSender
 
 
 class FakeRedis:
@@ -146,6 +158,23 @@ class FakeTurnstile:
         return self.ok
 
 
+class FakeDomainVerifier:
+    """Domain verifier that returns whatever the test wires up."""
+
+    def __init__(self) -> None:
+        self.dns_results: dict[str, VerificationResult] = {}
+        self.meta_results: dict[str, VerificationResult] = {}
+        self.calls: list[tuple[str, str, str]] = []
+
+    async def verify_dns_txt(self, *, domain: str, token: str) -> VerificationResult:
+        self.calls.append(("dns_txt", domain, token))
+        return self.dns_results.get(domain, VerificationResult(False, "no fixture"))
+
+    async def verify_meta_tag(self, *, domain: str, token: str) -> VerificationResult:
+        self.calls.append(("meta_tag", domain, token))
+        return self.meta_results.get(domain, VerificationResult(False, "no fixture"))
+
+
 @pytest.fixture
 def fake_redis() -> FakeRedis:
     return FakeRedis()
@@ -162,25 +191,82 @@ def fake_turnstile() -> FakeTurnstile:
 
 
 @pytest.fixture
+def fake_email() -> InMemoryEmailSender:
+    return InMemoryEmailSender()
+
+
+@pytest.fixture
+def fake_verifier() -> FakeDomainVerifier:
+    return FakeDomainVerifier()
+
+
+@pytest_asyncio.fixture
+async def db_session() -> AsyncIterator[AsyncSession]:
+    """One isolated in-memory SQLite engine per test (with cross-dialect models)."""
+    engine = create_async_engine("sqlite+aiosqlite:///:memory:", future=True)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    sessionmaker = async_sessionmaker(bind=engine, expire_on_commit=False, autoflush=False)
+    session = sessionmaker()
+    try:
+        yield session
+    finally:
+        await session.close()
+        await engine.dispose()
+
+
+@pytest.fixture
 def app(
     fake_redis: FakeRedis,
     fake_hibp: FakeHIBP,
     fake_turnstile: FakeTurnstile,
+    fake_email: InMemoryEmailSender,
+    fake_verifier: FakeDomainVerifier,
+    db_session: AsyncSession,
 ) -> Iterator[FastAPI]:
     async def _hibp_override() -> Any:
         yield fake_hibp
 
+    async def _session_override() -> AsyncIterator[AsyncSession]:
+        # Re-use the shared in-memory session so each request sees the same data.
+        try:
+            yield db_session
+            await db_session.commit()
+        except Exception:
+            await db_session.rollback()
+            raise
+
     real_app.dependency_overrides[redis_dep] = lambda: fake_redis
     real_app.dependency_overrides[hibp_client_dep] = _hibp_override
     real_app.dependency_overrides[turnstile_dep] = lambda: fake_turnstile
+    real_app.dependency_overrides[email_sender_dep] = lambda: fake_email
+    real_app.dependency_overrides[domain_verifier_dep] = lambda: fake_verifier
+    real_app.dependency_overrides[get_session] = _session_override
     try:
         yield real_app
     finally:
-        real_app.dependency_overrides.pop(redis_dep, None)
-        real_app.dependency_overrides.pop(hibp_client_dep, None)
-        real_app.dependency_overrides.pop(turnstile_dep, None)
+        for dep in (
+            redis_dep,
+            hibp_client_dep,
+            turnstile_dep,
+            email_sender_dep,
+            domain_verifier_dep,
+            get_session,
+        ):
+            real_app.dependency_overrides.pop(dep, None)
 
 
 @pytest.fixture
 def client(app: FastAPI) -> TestClient:
     return TestClient(app)
+
+
+__all__ = [
+    "EmailMessageSpec",
+    "FakeDomainVerifier",
+    "FakeHIBP",
+    "FakeRedis",
+    "FakeTurnstile",
+    "InMemoryEmailSender",
+    "VerificationResult",
+]
