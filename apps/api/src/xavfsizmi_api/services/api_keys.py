@@ -100,6 +100,38 @@ async def revoke_key(session: AsyncSession, *, user_id: uuid.UUID, key_id: uuid.
     return True
 
 
+# Ordering of paid tiers from cheapest to most expensive. Used to decide whether
+# a user on tier X is allowed to provision a key on tier Y.
+TIER_RANK: Final[dict[str, int]] = {"free": 0, "pro": 1, "high_rpm": 2}
+
+
+def tier_at_or_below(candidate: str, ceiling: str) -> bool:
+    """Return True if ``candidate`` is at most as expensive as ``ceiling``."""
+    return TIER_RANK.get(candidate, 99) <= TIER_RANK.get(ceiling, 0)
+
+
+async def set_all_keys_tier(session: AsyncSession, *, user_id: uuid.UUID, tier: Tier) -> int:
+    """Promote/demote every non-revoked key for ``user_id`` to ``tier``.
+
+    Returns the number of rows that were updated. Used when a user's subscription
+    transitions (webhook or checkout success) so existing API keys immediately
+    reflect the new rate-limit tier without manual intervention.
+    """
+    if tier not in TIERS:
+        raise ValueError(f"unknown tier: {tier}")
+    rows = (
+        await session.execute(
+            select(ApiKey).where(ApiKey.user_id == user_id, ApiKey.is_revoked.is_(False))
+        )
+    ).scalars()
+    updated = 0
+    for row in rows:
+        if row.tier != tier:
+            row.tier = tier
+            updated += 1
+    return updated
+
+
 async def authenticate_key(session: AsyncSession, *, plaintext: str) -> ApiKey | None:
     """Look up a key by prefix and verify the hash. Returns None on mismatch."""
     if not plaintext.startswith(KEY_PREFIX) or len(plaintext) < len(KEY_PREFIX) + 8:
@@ -119,6 +151,7 @@ async def authenticate_key(session: AsyncSession, *, plaintext: str) -> ApiKey |
 __all__ = [
     "KEY_PREFIX",
     "TIERS",
+    "TIER_RANK",
     "IssuedApiKey",
     "Tier",
     "authenticate_key",
@@ -126,5 +159,7 @@ __all__ = [
     "hash_key",
     "list_keys",
     "revoke_key",
+    "set_all_keys_tier",
+    "tier_at_or_below",
     "verify_key",
 ]

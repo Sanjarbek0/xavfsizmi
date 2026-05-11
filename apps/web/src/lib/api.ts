@@ -254,7 +254,10 @@ export async function listApiKeys(): Promise<ApiKeyRow[]> {
   return res.items;
 }
 
-export async function createApiKey(label: string, tier: ApiKeyTier): Promise<{ key: ApiKeyRow; plaintext: string }> {
+export async function createApiKey(
+  label: string,
+  tier: ApiKeyTier | null = null,
+): Promise<{ key: ApiKeyRow; plaintext: string }> {
   return callJson<{ key: ApiKeyRow; plaintext: string }>('/v1/account/api-keys', {
     method: 'POST',
     body: JSON.stringify({ label, tier }),
@@ -334,11 +337,23 @@ export interface UsagePoint {
   request_count: number;
 }
 
-export async function fetchApiKeyUsage(id: string, days = 30): Promise<UsagePoint[]> {
-  const res = await callJson<{ items: UsagePoint[] }>(
-    `/v1/account/api-keys/${id}/usage?days=${days}`,
-  );
-  return res.items;
+export interface ApiKeyUsage {
+  items: UsagePoint[];
+  total: number;
+  today: number;
+  current_minute: number;
+  tier: ApiKeyTier;
+  requests_per_minute: number;
+  remaining_this_minute: number;
+}
+
+export async function fetchApiKeyUsage(id: string, days = 30): Promise<ApiKeyUsage> {
+  return callJson<ApiKeyUsage>(`/v1/account/api-keys/${id}/usage?days=${days}`);
+}
+
+export interface TierLimit {
+  tier: ApiKeyTier;
+  requests_per_minute: number;
 }
 
 export interface SubscriptionStatus {
@@ -346,6 +361,7 @@ export interface SubscriptionStatus {
   status: string;
   current_period_end: string | null;
   has_customer: boolean;
+  available_tiers: TierLimit[];
 }
 
 export async function fetchSubscription(): Promise<SubscriptionStatus> {

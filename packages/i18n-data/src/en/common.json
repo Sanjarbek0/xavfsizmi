@@ -212,7 +212,23 @@
     "show_once_title": "Copy your key",
     "show_once_body": "You will not see this key again. Save it somewhere safe now.",
     "copy": "Copy",
-    "copied": "Copied"
+    "copied": "Copied",
+    "tier_above_subscription": {
+      "title": "Upgrade required",
+      "detail": "Your current subscription doesn't allow keys at this tier. Upgrade to unlock it."
+    },
+    "usage": {
+      "title": "Usage",
+      "hide": "Hide chart",
+      "show": "Show chart",
+      "total_30d": "Last 30 days",
+      "today": "Today",
+      "minute": "This minute",
+      "limit": "Limit",
+      "remaining": "Remaining",
+      "rpm_suffix": " req/min",
+      "empty": "No traffic yet — make a request to see it appear here."
+    }
   },
   "account_domains": {
     "title": "Your domains",
@@ -276,7 +292,21 @@
     "upgrade_high_rpm": "Upgrade to High RPM",
     "portal_title": "Stripe portal",
     "portal_subtitle": "Manage payment methods and invoices in the Stripe portal.",
-    "open_portal": "Open portal"
+    "open_portal": "Open portal",
+    "current_tier_badge": "Current plan",
+    "select_cta": "Select",
+    "checkout_success_title": "Subscription updated",
+    "checkout_success_detail": "Thanks — your subscription is being activated. New API keys are now eligible for this tier.",
+    "checkout_cancel_title": "Checkout cancelled",
+    "checkout_cancel_detail": "No changes were made. You can try again any time.",
+    "plans": {
+      "free_name": "Free",
+      "free_detail": "Basic email lookups for personal use.",
+      "pro_name": "Pro",
+      "pro_detail": "Higher rate limit, suitable for production integrations.",
+      "high_rpm_name": "High RPM",
+      "high_rpm_detail": "Sustained throughput for monitoring services and SOC teams."
+    }
   },
   "admin": {
     "title": "Administrator console",

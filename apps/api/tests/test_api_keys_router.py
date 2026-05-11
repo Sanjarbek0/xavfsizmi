@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import asyncio
+
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from xavfsizmi_api.config import get_settings
 
-from .conftest import InMemoryEmailSender
+from .conftest import InMemoryEmailSender, promote_user
 
 
 def _login(client: TestClient, email: str, fake_email: InMemoryEmailSender) -> None:
@@ -92,8 +95,10 @@ def test_public_api_with_valid_key_returns_data(
     client: TestClient,
     fake_email: InMemoryEmailSender,
     fake_hibp: object,
+    db_session: AsyncSession,
 ) -> None:
     _login(client, "user@example.com", fake_email)
+    asyncio.run(promote_user(db_session, email="user@example.com", tier="pro"))
     create = client.post(
         "/v1/account/api-keys",
         json={"label": "prod", "tier": "pro"},

@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
-from fastapi.testclient import TestClient
+import asyncio
 
-from .conftest import InMemoryEmailSender
+from fastapi.testclient import TestClient
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from .conftest import InMemoryEmailSender, promote_user
 
 
 def _login(client: TestClient, email: str, fake_email: InMemoryEmailSender) -> None:
@@ -22,8 +25,10 @@ def test_public_call_records_usage_and_emits_rate_limit_headers(
     client: TestClient,
     fake_email: InMemoryEmailSender,
     fake_hibp: object,
+    db_session: AsyncSession,
 ) -> None:
     _login(client, "usage@example.com", fake_email)
+    asyncio.run(promote_user(db_session, email="usage@example.com", tier="pro"))
     create = client.post("/v1/account/api-keys", json={"label": "u", "tier": "pro"}).json()
     plaintext = create["plaintext"]
     key_id = create["key"]["id"]
