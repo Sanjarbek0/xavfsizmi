@@ -180,6 +180,116 @@ def render_magic_link_email(*, link: str, locale: Locale) -> tuple[str, str, str
     return bundles[locale]
 
 
+def render_notification_confirm_email(
+    *, confirm_link: str, unsubscribe_link: str, locale: Locale
+) -> tuple[str, str, str]:
+    bundles = {
+        "uz": (
+            "Xavfsizmi — obunani tasdiqlang",
+            (
+                "Salom!\n\n"
+                "Xavfsizmi yangi sızıntılar haqida bildirishnomalarga obuna bo'lganingiz uchun rahmat.\n"
+                f"Obunani tasdiqlash uchun havolaga o'ting:\n{confirm_link}\n\n"
+                f"Obunani bekor qilish: {unsubscribe_link}"
+            ),
+            (
+                "<p>Salom!</p>"
+                "<p>Xavfsizmi yangi sızıntılar haqida bildirishnomalarga obuna bo'lganingiz uchun rahmat.</p>"
+                f'<p><a href="{confirm_link}" style="background:#0d1f2d;color:#fff;'
+                'padding:12px 20px;text-decoration:none;border-radius:6px;display:inline-block">Obunani tasdiqlash</a></p>'
+                f'<p>Yoki havolani brauzerda oching: <a href="{confirm_link}">{confirm_link}</a></p>'
+                f'<p style="color:#666;font-size:12px">Obunani bekor qilish: <a href="{unsubscribe_link}">bu yerda</a>.</p>'
+            ),
+        ),
+        "ru": (
+            "Xavfsizmi — подтвердите подписку",
+            (
+                "Здравствуйте!\n\n"
+                "Спасибо за подписку на уведомления Xavfsizmi о новых утечках.\n"
+                f"Подтвердите подписку: {confirm_link}\n\n"
+                f"Отписаться: {unsubscribe_link}"
+            ),
+            (
+                "<p>Здравствуйте!</p>"
+                "<p>Спасибо за подписку на уведомления Xavfsizmi о новых утечках.</p>"
+                f'<p><a href="{confirm_link}" style="background:#0d1f2d;color:#fff;'
+                'padding:12px 20px;text-decoration:none;border-radius:6px;display:inline-block">Подтвердить подписку</a></p>'
+                f'<p>Или откройте ссылку в браузере: <a href="{confirm_link}">{confirm_link}</a></p>'
+                f'<p style="color:#666;font-size:12px">Отписаться: <a href="{unsubscribe_link}">здесь</a>.</p>'
+            ),
+        ),
+        "en": (
+            "Xavfsizmi — confirm your subscription",
+            (
+                "Hi!\n\n"
+                "Thanks for subscribing to Xavfsizmi breach notifications.\n"
+                f"Please confirm your subscription: {confirm_link}\n\n"
+                f"Unsubscribe: {unsubscribe_link}"
+            ),
+            (
+                "<p>Hi!</p>"
+                "<p>Thanks for subscribing to Xavfsizmi breach notifications.</p>"
+                f'<p><a href="{confirm_link}" style="background:#0d1f2d;color:#fff;'
+                'padding:12px 20px;text-decoration:none;border-radius:6px;display:inline-block">Confirm subscription</a></p>'
+                f'<p>Or open the link in your browser: <a href="{confirm_link}">{confirm_link}</a></p>'
+                f'<p style="color:#666;font-size:12px">Unsubscribe: <a href="{unsubscribe_link}">here</a>.</p>'
+            ),
+        ),
+    }
+    return bundles[locale]
+
+
+def render_breach_notification_email(
+    *, breach_title: str, breach_date: str | None, unsubscribe_link: str, locale: Locale
+) -> tuple[str, str, str]:
+    when = breach_date or "?"
+    bundles = {
+        "uz": (
+            f"Xavfsizmi — yangi sızıntı: {breach_title}",
+            (
+                f"Salom!\n\n{breach_title} ({when}) sızıntısida sizning email manzilingiz topildi.\n"
+                "Tegishli parollarni almashtiring va imkon bo'lsa ikki bosqichli autentifikatsiyani yoqing.\n\n"
+                f"Obunani bekor qilish: {unsubscribe_link}"
+            ),
+            (
+                "<p>Salom!</p>"
+                f"<p><strong>{breach_title}</strong> ({when}) sızıntısida sizning email manzilingiz topildi.</p>"
+                "<p>Tegishli parollarni almashtiring va imkon bo'lsa ikki bosqichli autentifikatsiyani yoqing.</p>"
+                f'<p style="color:#666;font-size:12px">Obunani bekor qilish: <a href="{unsubscribe_link}">bu yerda</a>.</p>'
+            ),
+        ),
+        "ru": (
+            f"Xavfsizmi — новая утечка: {breach_title}",
+            (
+                f"Здравствуйте!\n\nВ утечке {breach_title} ({when}) обнаружен ваш адрес.\n"
+                "Смените пароли и включите двухфакторную аутентификацию там, где это возможно.\n\n"
+                f"Отписаться: {unsubscribe_link}"
+            ),
+            (
+                "<p>Здравствуйте!</p>"
+                f"<p>В утечке <strong>{breach_title}</strong> ({when}) обнаружен ваш адрес.</p>"
+                "<p>Смените пароли и включите 2FA там, где это возможно.</p>"
+                f'<p style="color:#666;font-size:12px">Отписаться: <a href="{unsubscribe_link}">здесь</a>.</p>'
+            ),
+        ),
+        "en": (
+            f"Xavfsizmi — new breach: {breach_title}",
+            (
+                f"Hi!\n\nYour email address appeared in the {breach_title} breach ({when}).\n"
+                "Change any reused passwords and enable 2FA where possible.\n\n"
+                f"Unsubscribe: {unsubscribe_link}"
+            ),
+            (
+                "<p>Hi!</p>"
+                f"<p>Your email address appeared in the <strong>{breach_title}</strong> breach ({when}).</p>"
+                "<p>Change any reused passwords and enable 2FA where possible.</p>"
+                f'<p style="color:#666;font-size:12px">Unsubscribe: <a href="{unsubscribe_link}">here</a>.</p>'
+            ),
+        ),
+    }
+    return bundles[locale]
+
+
 def render_domain_verification_email(
     *, domain: str, token: str, locale: Locale
 ) -> tuple[str, str, str]:

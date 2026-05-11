@@ -31,18 +31,23 @@ def client_ip(request: Request) -> str:
     return "unknown"
 
 
-async def enforce(client: redis.Redis, request: Request, rl: RateLimit) -> None:
-    """Increment the counter for this IP+scope; raise 429 ProblemError on overflow."""
+async def enforce(client: redis.Redis, request: Request, rl: RateLimit) -> int:
+    """Increment the counter for this IP+scope; raise 429 on overflow.
+
+    Returns the (post-increment) count so callers can surface it as a header.
+    """
     bucket = int(time.time() // 60)
     key = f"rl:{rl.scope}:{client_ip(request)}:{bucket}"
     pipe = client.pipeline(transaction=False)
     pipe.incr(key)
     pipe.expire(key, 65)
     count, _ = await pipe.execute()
-    if int(count) > rl.limit_per_minute:
+    current = int(count)
+    if current > rl.limit_per_minute:
         raise ProblemError(
             status=429,
             type_="https://xavfsizmi.example/errors/rate_limited",
             title_key="rate_limited.title",
             detail_key="rate_limited.detail",
         )
+    return current

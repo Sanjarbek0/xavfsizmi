@@ -11,8 +11,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from .config import get_settings
 from .core.errors import install_problem_handlers
 from .routers import (
+    admin,
     api_keys,
     auth,
+    billing,
     breaches,
     domains,
     health,
@@ -52,6 +54,9 @@ def create_app() -> FastAPI:
     app.include_router(api_keys.router, prefix="/v1")
     app.include_router(domains.router, prefix="/v1")
     app.include_router(public_api.router, prefix="/v1")
+    app.include_router(admin.router, prefix="/v1")
+    app.include_router(billing.router, prefix="/v1")
+    app.include_router(billing.webhook_router, prefix="/v1")
     return app
 
 

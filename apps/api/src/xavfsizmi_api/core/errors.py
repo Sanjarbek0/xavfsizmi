@@ -123,6 +123,66 @@ _PROBLEM_MESSAGES: dict[str, dict[i18n.Locale, str]] = {
         "ru": "Подтверждение не пройдено",
         "en": "Verification failed",
     },
+    "notifications.invalid_token.title": {
+        "uz": "Havola yaroqsiz",
+        "ru": "Ссылка недействительна",
+        "en": "Link is invalid",
+    },
+    "notifications.invalid_token.detail": {
+        "uz": "Havola muddati o'tgan yoki noto'g'ri.",
+        "ru": "Ссылка просрочена или некорректна.",
+        "en": "The link has expired or is malformed.",
+    },
+    "admin.forbidden.title": {
+        "uz": "Ruxsat yo'q",
+        "ru": "Доступ запрещён",
+        "en": "Forbidden",
+    },
+    "admin.forbidden.detail": {
+        "uz": "Ushbu amal uchun administrator huquqi kerak.",
+        "ru": "Для этого действия требуются права администратора.",
+        "en": "Administrator privileges are required for this action.",
+    },
+    "billing.unavailable.title": {
+        "uz": "To'lov tizimi sozlanmagan",
+        "ru": "Платёжная система не настроена",
+        "en": "Billing not configured",
+    },
+    "billing.unavailable.detail": {
+        "uz": "Stripe API kaliti sozlanmagan, to'lov vaqtincha ishlamaydi.",
+        "ru": "API-ключ Stripe не настроен, оплата временно недоступна.",
+        "en": "The Stripe API key is not configured, billing is temporarily unavailable.",
+    },
+    "billing.invalid_tier.title": {
+        "uz": "Tarif yaroqsiz",
+        "ru": "Тариф недействителен",
+        "en": "Invalid tier",
+    },
+    "billing.invalid_tier.detail": {
+        "uz": "Bu tarif mavjud emas.",
+        "ru": "Такого тарифа не существует.",
+        "en": "That tier does not exist.",
+    },
+    "billing.no_customer.title": {
+        "uz": "Mijoz topilmadi",
+        "ru": "Клиент не найден",
+        "en": "No billing customer",
+    },
+    "billing.no_customer.detail": {
+        "uz": "Avval obuna sotib oling.",
+        "ru": "Сначала оформите подписку.",
+        "en": "Start a subscription before opening the billing portal.",
+    },
+    "billing.webhook.invalid.title": {
+        "uz": "Webhook noto'g'ri",
+        "ru": "Webhook некорректен",
+        "en": "Invalid webhook",
+    },
+    "billing.webhook.invalid.detail": {
+        "uz": "Stripe imzosi tasdiqlanmadi.",
+        "ru": "Подпись Stripe не прошла проверку.",
+        "en": "Stripe signature could not be verified.",
+    },
 }
 
 

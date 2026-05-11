@@ -79,6 +79,12 @@ class User(Base):
         DateTime(timezone=True), nullable=False, default=_utcnow
     )
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    stripe_customer_id: Mapped[str | None] = mapped_column(String(64), nullable=True, unique=True)
+    subscription_tier: Mapped[str] = mapped_column(String(16), nullable=False, default="free")
+    subscription_status: Mapped[str] = mapped_column(String(32), nullable=False, default="inactive")
+    subscription_current_period_end: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
 
 class MagicLinkToken(Base):
@@ -226,6 +232,25 @@ class PasteCache(Base):
     )
 
 
+class BillingEvent(Base):
+    """Idempotent record of every Stripe webhook event we have processed."""
+
+    __tablename__ = "billing_events"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    event_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    user_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid(as_uuid=True),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    payload: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    received_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow
+    )
+
+
 class AuditLog(Base):
     __tablename__ = "audit_log"
 
@@ -255,6 +280,7 @@ __all__ = [
     "ApiKey",
     "ApiKeyUsage",
     "AuditLog",
+    "BillingEvent",
     "Branding",
     "BreachCache",
     "Domain",
