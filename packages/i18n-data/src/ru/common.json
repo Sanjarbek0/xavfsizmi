@@ -317,7 +317,9 @@
       "metrics": "Метрики",
       "users": "Пользователи",
       "audit": "Аудит",
-      "breaches": "Утечки"
+      "breaches": "Утечки",
+      "stats": "Статистика",
+      "notify": "Рассылка"
     },
     "metrics": {
       "users": "Пользователи",
@@ -355,7 +357,50 @@
       "col_name": "Имя",
       "col_title": "Заголовок",
       "col_domain": "Домен",
-      "col_date": "Дата"
+      "col_date": "Дата",
+      "csv_heading": "Массовый импорт (CSV)",
+      "csv_hint": "Обязательная колонка: name. Необязательные: title, domain, breach_date, pwn_count, is_verified, is_sensitive, description, data_classes (через точку с запятой).",
+      "csv_choose": "Выберите CSV-файл",
+      "csv_dry_run": "Только проверка (не записывать)",
+      "csv_upload": "Загрузить",
+      "csv_result_inserted": "Добавлено",
+      "csv_result_updated": "Обновлено",
+      "csv_result_skipped": "Пропущено строк",
+      "csv_result_dry_run": "Режим проверки — ничего не сохранено.",
+      "csv_no_file": "Сначала выберите файл."
+    },
+    "stats": {
+      "heading_users": "Пользователи",
+      "heading_breaches": "Каталог утечек",
+      "total_users": "Всего пользователей",
+      "blocked_users": "Заблокировано",
+      "admin_users": "Администраторы",
+      "active_subscribers": "Активные подписчики",
+      "pending_subscribers": "Ожидающие подтверждения",
+      "by_tier": "Активные API-ключи по тарифу",
+      "by_subscription_status": "Статус подписки",
+      "signups_chart": "Регистрации (последние 30 дней)",
+      "breaches_chart": "Добавлено утечек (последние 30 дней)",
+      "total_breaches": "Всего утечек",
+      "sensitive_breaches": "Чувствительные",
+      "verified_breaches": "Подтверждённые",
+      "total_pwn_count": "Всего раскрытых записей",
+      "top_by_pwn_count": "Крупнейшие утечки",
+      "pwn_count": "Раскрытых записей"
+    },
+    "notify": {
+      "heading": "Ручная рассылка",
+      "subtitle": "Отправить выбранное уведомление о утечке всем подтверждённым подписчикам.",
+      "breach_label": "Утечка",
+      "limit_label": "Лимит (необязательно)",
+      "dry_run": "Только проверка (не отправлять)",
+      "send": "Отправить уведомление",
+      "preview": "Предпросмотр получателей",
+      "subscribers_total": "Всего подтверждённых подписчиков",
+      "sent": "Отправлено",
+      "failed": "Ошибки",
+      "skipped": "Пропущено",
+      "no_subscribers": "Подтверждённых подписчиков пока нет."
     }
   }
 }
