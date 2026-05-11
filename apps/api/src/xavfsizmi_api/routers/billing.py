@@ -20,7 +20,7 @@ from ..core.errors import ProblemError
 from ..core.rate_limit import client_ip
 from ..db.models import BillingEvent, User
 from ..deps import BillingDep, CurrentUserDep, SessionDep, SettingsDep
-from ..services.api_keys import TIERS, Tier
+from ..services.api_keys import TIERS, Tier, set_all_keys_tier
 from ..services.audit import write_audit
 from ..services.billing import PAID_TIERS, tier_price_id
 
@@ -45,11 +45,17 @@ class PortalResponse(BaseModel):
     portal_url: str
 
 
+class TierLimit(BaseModel):
+    tier: Tier
+    requests_per_minute: int
+
+
 class SubscriptionResponse(BaseModel):
     tier: str
     status: str
     current_period_end: datetime | None
     has_customer: bool
+    available_tiers: list[TierLimit]
 
 
 def _base_url(request: Request, settings_origins: list[str]) -> str:
@@ -62,12 +68,17 @@ def _base_url(request: Request, settings_origins: list[str]) -> str:
 
 
 @router.get("/subscription", response_model=SubscriptionResponse)
-async def get_subscription(user: CurrentUserDep) -> SubscriptionResponse:
+async def get_subscription(user: CurrentUserDep, settings: SettingsDep) -> SubscriptionResponse:
     return SubscriptionResponse(
         tier=user.subscription_tier,
         status=user.subscription_status,
         current_period_end=user.subscription_current_period_end,
         has_customer=user.stripe_customer_id is not None,
+        available_tiers=[
+            TierLimit(tier="free", requests_per_minute=settings.rl_api_free),
+            TierLimit(tier="pro", requests_per_minute=settings.rl_api_pro),
+            TierLimit(tier="high_rpm", requests_per_minute=settings.rl_api_high_rpm),
+        ],
     )
 
 
@@ -208,6 +219,11 @@ async def _apply_subscription_event(
         user.subscription_current_period_end = period_end
     if status in {"canceled", "incomplete_expired"}:
         user.subscription_tier = "free"
+    # Whenever the subscription tier shifts, mirror it onto every active API
+    # key the user owns so rate-limit decisions in ``public_api`` line up with
+    # what the billing system says.
+    new_tier = cast(Tier, user.subscription_tier)
+    await set_all_keys_tier(session, user_id=user.id, tier=new_tier)
     return user
 
 

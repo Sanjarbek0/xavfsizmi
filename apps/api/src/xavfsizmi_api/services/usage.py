@@ -70,6 +70,29 @@ class DailyUsage:
     request_count: int
 
 
+async def today_count(redis_client: redis.Redis, *, api_key_id: uuid.UUID) -> int:
+    """Read today's request count straight from Redis (no DB hit)."""
+    raw = await redis_client.get(_redis_key(api_key_id, _today_utc()))
+    return int(raw) if raw is not None else 0
+
+
+async def current_minute(redis_client: redis.Redis, *, tier: str, ip: str) -> int:
+    """Peek at the current minute's rate-limit bucket (without incrementing).
+
+    Mirrors the keying convention used by ``core.rate_limit`` so we can show a
+    "remaining this minute" stat without touching the bucket. ``ip`` is reused
+    here as the bucket discriminator — the public API endpoint actually keys
+    by API key id (it overwrites ``request.scope['client']``), so the caller
+    passes the api key id string to match that.
+    """
+    import time as _time
+
+    bucket = int(_time.time() // 60)
+    key = f"rl:api.tier.{tier}:{ip}:{bucket}"
+    raw = await redis_client.get(key)
+    return int(raw) if raw is not None else 0
+
+
 async def history(
     session: AsyncSession, *, api_key_id: uuid.UUID, days: int = 30
 ) -> list[DailyUsage]:
@@ -92,4 +115,11 @@ async def history(
     return out
 
 
-__all__ = ["USAGE_TTL_SECONDS", "DailyUsage", "history", "record_call"]
+__all__ = [
+    "USAGE_TTL_SECONDS",
+    "DailyUsage",
+    "current_minute",
+    "history",
+    "record_call",
+    "today_count",
+]

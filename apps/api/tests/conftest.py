@@ -274,6 +274,25 @@ def client(app: FastAPI) -> TestClient:
     return TestClient(app)
 
 
+async def promote_user(session: AsyncSession, *, email: str, tier: str) -> None:
+    """Test helper — directly bump a user's ``subscription_tier`` in the DB.
+
+    Bypasses the Stripe webhook so individual tests can exercise tier-gated
+    endpoints (e.g. creating a ``pro`` API key) without standing up a full
+    billing fixture.
+    """
+    from sqlalchemy import select as _select
+
+    from xavfsizmi_api.db.models import User as _User
+    from xavfsizmi_api.services.api_keys import set_all_keys_tier as _set_all_keys_tier
+
+    user = (await session.execute(_select(_User).where(_User.email == email))).scalar_one()
+    user.subscription_tier = tier
+    user.subscription_status = "active"
+    await _set_all_keys_tier(session, user_id=user.id, tier=tier)
+    await session.commit()
+
+
 __all__ = [
     "EmailMessageSpec",
     "FakeBilling",
@@ -283,4 +302,5 @@ __all__ = [
     "FakeTurnstile",
     "InMemoryEmailSender",
     "VerificationResult",
+    "promote_user",
 ]

@@ -217,7 +217,23 @@
     "show_once_title": "Kalitingizni nusxa oling",
     "show_once_body": "Bu kalitni boshqa hech qachon ko'rmaysiz. Uni hozir xavfsiz joyga saqlang.",
     "copy": "Nusxalash",
-    "copied": "Nusxalandi"
+    "copied": "Nusxalandi",
+    "tier_above_subscription": {
+      "title": "Tarifni oshirish kerak",
+      "detail": "Joriy obunangiz ushbu tarifdagi kalit yaratishga ruxsat bermaydi. Tarifni oshiring."
+    },
+    "usage": {
+      "title": "Foydalanish",
+      "hide": "Grafikni yashirish",
+      "show": "Grafikni ko'rsatish",
+      "total_30d": "So'nggi 30 kun",
+      "today": "Bugun",
+      "minute": "Shu daqiqada",
+      "limit": "Limit",
+      "remaining": "Qoldi",
+      "rpm_suffix": " so'rov/daqiqa",
+      "empty": "Hali so'rov yo'q — bitta so'rov yuboring va shu yerda ko'ring."
+    }
   },
   "account_domains": {
     "title": "Domenlaringiz",
@@ -276,7 +292,21 @@
     "upgrade_high_rpm": "High RPM tarifiga o'tish",
     "portal_title": "Stripe portali",
     "portal_subtitle": "To'lov usullari va hisob-fakturalarini Stripe portalida boshqaring.",
-    "open_portal": "Portalni ochish"
+    "open_portal": "Portalni ochish",
+    "current_tier_badge": "Joriy tarif",
+    "select_cta": "Tanlash",
+    "checkout_success_title": "Obuna yangilandi",
+    "checkout_success_detail": "Rahmat — obunangiz faollashtirilmoqda. Yangi API kalitlar shu tarifda yaratilishi mumkin.",
+    "checkout_cancel_title": "To'lov bekor qilindi",
+    "checkout_cancel_detail": "Hech narsa o'zgarmadi. Istalgan vaqtda qayta urinib ko'ring.",
+    "plans": {
+      "free_name": "Bepul",
+      "free_detail": "Shaxsiy foydalanish uchun asosiy email tekshiruvlari.",
+      "pro_name": "Pro",
+      "pro_detail": "Yuqori limit, ishlab chiqarish integratsiyalari uchun mos.",
+      "high_rpm_name": "Yuqori RPM",
+      "high_rpm_detail": "Monitoring xizmatlari va SOC jamoalari uchun barqaror tezlik."
+    }
   },
   "admin": {
     "title": "Administrator paneli",

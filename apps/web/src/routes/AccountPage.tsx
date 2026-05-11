@@ -7,14 +7,22 @@ import {
   ApiError,
   createApiKey,
   deleteDomain,
+  fetchApiKeyUsage,
   listApiKeys,
   listDomains,
   registerDomain,
   revokeApiKey,
   verifyDomain,
 } from '../lib/api';
-import type { ApiKeyRow, ApiKeyTier, DomainMethod, DomainRow } from '../lib/api';
+import type {
+  ApiKeyRow,
+  ApiKeyTier,
+  ApiKeyUsage,
+  DomainMethod,
+  DomainRow,
+} from '../lib/api';
 import { useAuth } from '../lib/auth-context';
+import { UsageSparkline } from '../components/UsageSparkline';
 
 type Tab = 'overview' | 'api_keys' | 'domains';
 
@@ -95,6 +103,7 @@ function ApiKeysPanel() {
   const [plaintext, setPlaintext] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   async function refresh() {
     setLoading(true);
@@ -221,38 +230,128 @@ function ApiKeysPanel() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {keys.map((k) => (
-                <tr key={k.id}>
-                  <td className="px-3 py-2 font-medium">{k.label || '—'}</td>
-                  <td className="px-3 py-2 font-mono text-xs">{k.key_prefix}…</td>
-                  <td className="px-3 py-2">{k.tier}</td>
-                  <td className="px-3 py-2">
-                    {k.is_revoked ? (
-                      <span className="text-red-700">{t('api_keys.status_revoked')}</span>
-                    ) : (
-                      <span className="text-emerald-700">{t('api_keys.status_active')}</span>
-                    )}
-                  </td>
-                  <td className="px-3 py-2">{new Date(k.created_at).toLocaleDateString()}</td>
-                  <td className="px-3 py-2">
-                    {k.last_used_at ? new Date(k.last_used_at).toLocaleDateString() : '—'}
-                  </td>
-                  <td className="px-3 py-2">
-                    {!k.is_revoked ? (
-                      <button
-                        onClick={() => void onRevoke(k.id)}
-                        className="text-xs font-medium text-red-700 hover:underline"
-                      >
-                        {t('api_keys.revoke_cta')}
-                      </button>
-                    ) : null}
-                  </td>
-                </tr>
+                <ApiKeyRowView
+                  key={k.id}
+                  k={k}
+                  expanded={expanded === k.id}
+                  onToggle={() => setExpanded(expanded === k.id ? null : k.id)}
+                  onRevoke={() => void onRevoke(k.id)}
+                />
               ))}
             </tbody>
           </table>
         </div>
       )}
     </section>
+  );
+}
+
+function ApiKeyRowView({
+  k,
+  expanded,
+  onToggle,
+  onRevoke,
+}: {
+  k: ApiKeyRow;
+  expanded: boolean;
+  onToggle: () => void;
+  onRevoke: () => void;
+}) {
+  const { t } = useTranslation();
+  const [usage, setUsage] = useState<ApiKeyUsage | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!expanded) return;
+    setError(null);
+    fetchApiKeyUsage(k.id, 30)
+      .then(setUsage)
+      .catch((err: unknown) => {
+        setError(err instanceof ApiError ? err.message : String(err));
+      });
+  }, [expanded, k.id]);
+
+  return (
+    <>
+      <tr data-testid={`api-key-row-${k.id}`}>
+        <td className="px-3 py-2 font-medium">{k.label || '—'}</td>
+        <td className="px-3 py-2 font-mono text-xs">{k.key_prefix}…</td>
+        <td className="px-3 py-2">{k.tier}</td>
+        <td className="px-3 py-2">
+          {k.is_revoked ? (
+            <span className="text-red-700">{t('api_keys.status_revoked')}</span>
+          ) : (
+            <span className="text-emerald-700">{t('api_keys.status_active')}</span>
+          )}
+        </td>
+        <td className="px-3 py-2">{new Date(k.created_at).toLocaleDateString()}</td>
+        <td className="px-3 py-2">
+          {k.last_used_at ? new Date(k.last_used_at).toLocaleDateString() : '—'}
+        </td>
+        <td className="px-3 py-2 space-x-3">
+          <button
+            type="button"
+            onClick={onToggle}
+            className="text-xs font-medium text-slate-700 hover:underline"
+          >
+            {expanded ? t('api_keys.usage.hide') : t('api_keys.usage.show')}
+          </button>
+          {!k.is_revoked ? (
+            <button
+              onClick={onRevoke}
+              className="text-xs font-medium text-red-700 hover:underline"
+            >
+              {t('api_keys.revoke_cta')}
+            </button>
+          ) : null}
+        </td>
+      </tr>
+      {expanded ? (
+        <tr data-testid={`api-key-usage-${k.id}`}>
+          <td colSpan={7} className="bg-slate-50 px-3 py-4">
+            {error ? (
+              <div className="text-sm text-red-700">{error}</div>
+            ) : !usage ? (
+              <p className="text-sm text-slate-600">{t('common.loading')}</p>
+            ) : (
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+                  {t('api_keys.usage.title')}
+                </h3>
+                <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <UsageStat label={t('api_keys.usage.total_30d')} value={usage.total} />
+                  <UsageStat label={t('api_keys.usage.today')} value={usage.today} />
+                  <UsageStat
+                    label={t('api_keys.usage.limit')}
+                    value={`${usage.requests_per_minute}${t('api_keys.usage.rpm_suffix')}`}
+                  />
+                  <UsageStat
+                    label={t('api_keys.usage.remaining')}
+                    value={`${usage.remaining_this_minute}/${usage.requests_per_minute}`}
+                  />
+                </dl>
+                {usage.items.length > 0 ? (
+                  <div className="text-slate-700">
+                    <UsageSparkline data={usage.items} />
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-500">{t('api_keys.usage.empty')}</p>
+                )}
+              </div>
+            )}
+          </td>
+        </tr>
+      ) : null}
+    </>
+  );
+}
+
+function UsageStat({ label, value }: { label: string; value: number | string }) {
+  return (
+    <div>
+      <div className="text-xs uppercase tracking-wide text-slate-500">{label}</div>
+      <div className="mt-1 text-sm font-semibold text-slate-900">{value}</div>
+    </div>
   );
 }
 
