@@ -11,13 +11,14 @@ from __future__ import annotations
 import hashlib
 from typing import Any
 
-from fastapi import APIRouter, Path, Query, Request
+from fastapi import APIRouter, Path, Query, Request, Response
 
 from ..core.errors import ProblemError
 from ..core.rate_limit import RateLimit, enforce
-from ..deps import ApiKeyDep, HIBPDep, RedisDep, SettingsDep
+from ..deps import ApiKeyDep, HIBPDep, RedisDep, SessionDep, SettingsDep
 from ..services.cache import cache_get_json, cache_set_json
 from ..services.hibp_client import HIBPError
+from ..services.usage import record_call
 from .breaches import AccountLookupResponse, BreachSummary
 
 router = APIRouter(prefix="/api", tags=["public-api"])
@@ -60,10 +61,12 @@ def _rate_limit_for_tier(tier: str, settings: Any) -> RateLimit:
 @router.get("/breachedaccount/{account}", response_model=AccountLookupResponse)
 async def public_account_lookup(
     request: Request,
+    response: Response,
     api_key: ApiKeyDep,
     hibp: HIBPDep,
     redis_client: RedisDep,
     settings: SettingsDep,
+    session: SessionDep,
     account: str = Path(min_length=3, max_length=254),
     truncate_response: bool = Query(default=False, alias="truncateResponse"),
     include_unverified: bool = Query(default=True, alias="includeUnverified"),
@@ -72,7 +75,14 @@ async def public_account_lookup(
     # Re-key the limit by API key id rather than IP so multiple servers see one bucket.
     request.scope.setdefault("client", ("api-key", 0))
     request.scope["client"] = (str(api_key.id), 0)
-    await enforce(redis_client, request, rl)
+    used = await enforce(redis_client, request, rl)
+
+    remaining = max(0, rl.limit_per_minute - used)
+    response.headers["X-RateLimit-Limit"] = str(rl.limit_per_minute)
+    response.headers["X-RateLimit-Remaining"] = str(remaining)
+    response.headers["X-API-Tier"] = api_key.tier
+
+    await record_call(redis_client, session, api_key_id=api_key.id)
 
     cache_key = (
         f"acct:{_account_hash(account)}:t{int(truncate_response)}:u{int(include_unverified)}"

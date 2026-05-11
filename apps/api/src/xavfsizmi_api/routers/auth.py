@@ -197,6 +197,8 @@ async def verify_magic_link(
             title_key="auth.invalid_token.title",
             detail_key="auth.invalid_token.detail",
         )
+    if not user.is_admin and user.email in settings.admin_email_set:
+        user.is_admin = True
     cookie_value = issue_session_cookie(user.id, settings=settings)
     _set_session_cookie(response, cookie_value, settings=settings)
     await write_audit(

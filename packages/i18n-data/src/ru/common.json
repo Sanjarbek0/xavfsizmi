@@ -247,5 +247,85 @@
     "title": "Страница не найдена",
     "message": "Не удалось найти эту страницу.",
     "home": "На главную"
+  },
+  "confirm": {
+    "title": "Подтверждение подписки",
+    "subtitle": "Мы проверим токен и активируем подписку.",
+    "verifying": "Проверяем…",
+    "missing_token": "Токен в ссылке не найден.",
+    "error": "Не удалось подтвердить ссылку. Возможно, она устарела."
+  },
+  "unsubscribe": {
+    "title": "Отписаться",
+    "subtitle": "Мы прекратим присылать вам уведомления.",
+    "processing": "Отписываем…",
+    "missing_token": "Токен в ссылке не найден.",
+    "error": "Не удалось отписаться. Возможно, ссылка устарела."
+  },
+  "billing": {
+    "title": "Подписка и оплата",
+    "subtitle": "Управляйте текущим тарифом или перейдите на платный план.",
+    "current_plan": "Текущий тариф",
+    "tier_label": "Тариф",
+    "status_label": "Статус",
+    "renews_label": "Следующее списание",
+    "no_renewal": "—",
+    "upgrade_title": "Сменить тариф",
+    "upgrade_subtitle": "Вы перейдёте на страницу оплаты Stripe; отменить можно в любой момент.",
+    "upgrade_pro": "Перейти на Pro",
+    "upgrade_high_rpm": "Перейти на High RPM",
+    "portal_title": "Портал Stripe",
+    "portal_subtitle": "Управляйте платёжными методами и счетами в портале Stripe.",
+    "open_portal": "Открыть портал"
+  },
+  "admin": {
+    "title": "Панель администратора",
+    "subtitle": "Метрики, пользователи, журнал аудита и утечки.",
+    "forbidden_title": "Доступ запрещён",
+    "forbidden_detail": "У вас нет прав администратора. Свяжитесь с нами, если считаете это ошибкой.",
+    "tabs": {
+      "metrics": "Метрики",
+      "users": "Пользователи",
+      "audit": "Аудит",
+      "breaches": "Утечки"
+    },
+    "metrics": {
+      "users": "Пользователи",
+      "api_keys": "API-ключи",
+      "domains": "Домены",
+      "subscribers": "Подписчики",
+      "cached_breaches": "Кэшированные утечки"
+    },
+    "users": {
+      "email": "Email",
+      "role": "Роль",
+      "status": "Статус",
+      "created": "Создан",
+      "actions": "Действия",
+      "admin": "Администратор",
+      "user": "Пользователь",
+      "active": "Активен",
+      "blocked": "Заблокирован",
+      "block": "Заблокировать",
+      "unblock": "Разблокировать"
+    },
+    "audit": {
+      "when": "Когда",
+      "action": "Действие",
+      "target": "Объект",
+      "actor": "IP"
+    },
+    "breaches": {
+      "name_placeholder": "Имя утечки (например, Adobe)",
+      "title_placeholder": "Заголовок",
+      "domain_placeholder": "Домен",
+      "date_placeholder": "Дата (YYYY-MM-DD)",
+      "description_placeholder": "Краткое описание",
+      "save": "Сохранить / обновить",
+      "col_name": "Имя",
+      "col_title": "Заголовок",
+      "col_domain": "Домен",
+      "col_date": "Дата"
+    }
   }
 }

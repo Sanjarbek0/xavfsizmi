@@ -309,3 +309,139 @@ export async function verifyDomain(id: string, submittedToken?: string): Promise
 export async function deleteDomain(id: string): Promise<void> {
   await callJson<void>(`/v1/account/domains/${id}`, { method: 'DELETE' });
 }
+
+export interface TokenActionResponse {
+  status: string;
+  message: string;
+}
+
+export async function confirmNotification(token: string): Promise<TokenActionResponse> {
+  return callJson<TokenActionResponse>('/v1/notifications/confirm', {
+    method: 'POST',
+    body: JSON.stringify({ token }),
+  });
+}
+
+export async function unsubscribeNotification(token: string): Promise<TokenActionResponse> {
+  return callJson<TokenActionResponse>('/v1/notifications/unsubscribe', {
+    method: 'POST',
+    body: JSON.stringify({ token }),
+  });
+}
+
+export interface UsagePoint {
+  day: string;
+  request_count: number;
+}
+
+export async function fetchApiKeyUsage(id: string, days = 30): Promise<UsagePoint[]> {
+  const res = await callJson<{ items: UsagePoint[] }>(
+    `/v1/account/api-keys/${id}/usage?days=${days}`,
+  );
+  return res.items;
+}
+
+export interface SubscriptionStatus {
+  tier: string;
+  status: string;
+  current_period_end: string | null;
+  has_customer: boolean;
+}
+
+export async function fetchSubscription(): Promise<SubscriptionStatus> {
+  return callJson<SubscriptionStatus>('/v1/account/billing/subscription');
+}
+
+export interface CheckoutPayload {
+  tier: 'pro' | 'high_rpm';
+  successPath?: string;
+  cancelPath?: string;
+}
+
+export async function startCheckout(payload: CheckoutPayload): Promise<{ checkout_url: string; session_id: string }> {
+  return callJson('/v1/account/billing/checkout', {
+    method: 'POST',
+    body: JSON.stringify({
+      tier: payload.tier,
+      success_path: payload.successPath ?? null,
+      cancel_path: payload.cancelPath ?? null,
+    }),
+  });
+}
+
+export async function openBillingPortal(): Promise<{ portal_url: string }> {
+  return callJson('/v1/account/billing/portal', { method: 'POST' });
+}
+
+export interface AdminMetrics {
+  user_count: number;
+  api_key_count: number;
+  domain_count: number;
+  notification_subscriber_count: number;
+  cached_breach_count: number;
+}
+
+export async function fetchAdminMetrics(): Promise<AdminMetrics> {
+  return callJson<AdminMetrics>('/v1/admin/metrics');
+}
+
+export interface AdminUserRow {
+  id: string;
+  email: string;
+  is_admin: boolean;
+  is_blocked: boolean;
+  created_at: string;
+  last_login_at: string | null;
+}
+
+export async function fetchAdminUsers(): Promise<AdminUserRow[]> {
+  const res = await callJson<{ users: AdminUserRow[] }>('/v1/admin/users');
+  return res.users;
+}
+
+export async function setUserBlocked(userId: string, blocked: boolean): Promise<AdminUserRow> {
+  return callJson<AdminUserRow>(`/v1/admin/users/${userId}/block`, {
+    method: 'POST',
+    body: JSON.stringify({ blocked }),
+  });
+}
+
+export interface AdminAuditRow {
+  id: number;
+  actor_user_id: string | null;
+  actor_ip: string | null;
+  action: string;
+  target_type: string | null;
+  target_id: string | null;
+  detail: Record<string, unknown> | null;
+  created_at: string;
+}
+
+export async function fetchAdminAudit(limit = 100): Promise<AdminAuditRow[]> {
+  const res = await callJson<{ entries: AdminAuditRow[] }>(`/v1/admin/audit?limit=${limit}`);
+  return res.entries;
+}
+
+export interface AdminBreachRow {
+  name: string;
+  title: string | null;
+  domain: string | null;
+  breach_date: string | null;
+  pwn_count: number | null;
+  is_verified: boolean | null;
+  is_sensitive: boolean | null;
+  description: string | null;
+  data_classes: string[] | null;
+}
+
+export async function fetchAdminBreaches(): Promise<AdminBreachRow[]> {
+  const res = await callJson<{ breaches: AdminBreachRow[] }>('/v1/admin/breaches');
+  return res.breaches;
+}
+
+export async function upsertAdminBreach(payload: AdminBreachRow): Promise<AdminBreachRow> {
+  return callJson<AdminBreachRow>('/v1/admin/breaches', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}

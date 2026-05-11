@@ -38,6 +38,11 @@ export function Header() {
           </NavLink>
         </nav>
         <div className="flex items-center gap-2">
+          {user?.is_admin ? (
+            <NavLink to={`/${locale}/admin`} className={navClass}>
+              {t('admin.title')}
+            </NavLink>
+          ) : null}
           {user ? (
             <NavLink to={`/${locale}/account`} className={navClass}>
               {t('auth.account_link')}

@@ -247,5 +247,85 @@
     "submit_token_placeholder": "Sizga yuborilgan tokenni kiriting",
     "verify_failed": "Tasdiqlash muvaffaqiyatsiz: {{detail}}",
     "empty": "Hali domen qo'shmadingiz."
+  },
+  "confirm": {
+    "title": "Obunani tasdiqlash",
+    "subtitle": "Havoladagi tokenni tekshiramiz va obunangizni faollashtiramiz.",
+    "verifying": "Tekshirilmoqda…",
+    "missing_token": "Havolada token topilmadi.",
+    "error": "Havolani tasdiqlay olmadik. U muddati o'tgan bo'lishi mumkin."
+  },
+  "unsubscribe": {
+    "title": "Obunadan chiqish",
+    "subtitle": "Bizdan kelajakdagi xabarlarni olishni to'xtatamiz.",
+    "processing": "Bekor qilinmoqda…",
+    "missing_token": "Havolada token topilmadi.",
+    "error": "Obunani bekor qila olmadik. Havola eskirgan bo'lishi mumkin."
+  },
+  "billing": {
+    "title": "Obuna va to'lov",
+    "subtitle": "Joriy tarifingizni boshqaring yoki pullik rejaga o'ting.",
+    "current_plan": "Joriy tarif",
+    "tier_label": "Tarif",
+    "status_label": "Holat",
+    "renews_label": "Keyingi to'lov",
+    "no_renewal": "—",
+    "upgrade_title": "Tarifni o'zgartirish",
+    "upgrade_subtitle": "Stripe orqali to'lov sahifasiga o'tasiz va istalgan paytda bekor qila olasiz.",
+    "upgrade_pro": "Pro tarifga o'tish",
+    "upgrade_high_rpm": "High RPM tarifiga o'tish",
+    "portal_title": "Stripe portali",
+    "portal_subtitle": "To'lov usullari va hisob-fakturalarini Stripe portalida boshqaring.",
+    "open_portal": "Portalni ochish"
+  },
+  "admin": {
+    "title": "Administrator paneli",
+    "subtitle": "Tizim metrikalari, foydalanuvchilar, audit logi va sızıntılar bilan ishlash.",
+    "forbidden_title": "Ruxsat yo'q",
+    "forbidden_detail": "Sizda administrator huquqi yo'q. Agar bu xato deb hisoblasangiz, bog'laning.",
+    "tabs": {
+      "metrics": "Metrikalar",
+      "users": "Foydalanuvchilar",
+      "audit": "Audit",
+      "breaches": "Sızıntılar"
+    },
+    "metrics": {
+      "users": "Foydalanuvchilar",
+      "api_keys": "API kalitlar",
+      "domains": "Domenlar",
+      "subscribers": "Obunachilar",
+      "cached_breaches": "Keshlangan sızıntılar"
+    },
+    "users": {
+      "email": "Email",
+      "role": "Rol",
+      "status": "Holat",
+      "created": "Yaratilgan",
+      "actions": "Amallar",
+      "admin": "Administrator",
+      "user": "Foydalanuvchi",
+      "active": "Faol",
+      "blocked": "Bloklangan",
+      "block": "Bloklash",
+      "unblock": "Blokdan chiqarish"
+    },
+    "audit": {
+      "when": "Vaqt",
+      "action": "Amal",
+      "target": "Obyekt",
+      "actor": "IP"
+    },
+    "breaches": {
+      "name_placeholder": "Sızıntı nomi (masalan, Adobe)",
+      "title_placeholder": "Sarlavha",
+      "domain_placeholder": "Domen",
+      "date_placeholder": "Sana (YYYY-MM-DD)",
+      "description_placeholder": "Qisqacha tavsif",
+      "save": "Saqlash / yangilash",
+      "col_name": "Nom",
+      "col_title": "Sarlavha",
+      "col_domain": "Domen",
+      "col_date": "Sana"
+    }
   }
 }

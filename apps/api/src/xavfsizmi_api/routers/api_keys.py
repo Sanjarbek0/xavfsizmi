@@ -7,11 +7,12 @@ ever returned at creation time; subsequent reads expose only the public prefix.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 
 from fastapi import APIRouter, Request
 from fastapi.responses import Response as FastAPIResponse
 from pydantic import BaseModel, Field
+from sqlalchemy import select
 
 from ..core.errors import ProblemError
 from ..core.rate_limit import client_ip
@@ -25,6 +26,7 @@ from ..services.api_keys import (
     revoke_key,
 )
 from ..services.audit import write_audit
+from ..services.usage import history
 
 router = APIRouter(prefix="/account/api-keys", tags=["account"])
 
@@ -97,6 +99,33 @@ async def create_api_key(
         detail={"label": payload.label, "tier": payload.tier},
     )
     return CreateKeyResponse(key=_to_summary(issued.record), plaintext=issued.plaintext)
+
+
+class UsagePoint(BaseModel):
+    day: date
+    request_count: int
+
+
+class UsageResponse(BaseModel):
+    items: list[UsagePoint]
+
+
+@router.get("/{key_id}/usage", response_model=UsageResponse)
+async def get_api_key_usage(
+    key_id: uuid.UUID,
+    user: CurrentUserDep,
+    session: SessionDep,
+    days: int = 30,
+) -> UsageResponse:
+    record = (
+        await session.execute(select(ApiKey).where(ApiKey.id == key_id, ApiKey.user_id == user.id))
+    ).scalar_one_or_none()
+    if record is None:
+        raise ProblemError(status=404)
+    points = await history(session, api_key_id=key_id, days=days)
+    return UsageResponse(
+        items=[UsagePoint(day=p.day, request_count=p.request_count) for p in points]
+    )
 
 
 @router.delete("/{key_id}", status_code=204)
