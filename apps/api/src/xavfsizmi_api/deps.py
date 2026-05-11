@@ -16,6 +16,7 @@ from .db.models import ApiKey, User
 from .db.session import get_session
 from .services.api_keys import authenticate_key
 from .services.auth import SESSION_COOKIE_NAME, read_session_cookie
+from .services.billing import BillingProvider, build_billing
 from .services.cache import get_redis
 from .services.domains import DefaultDomainVerifier, DomainVerifier
 from .services.email import EmailSender, get_email_sender
@@ -51,6 +52,12 @@ def domain_verifier_dep() -> DomainVerifier:
     return DefaultDomainVerifier()
 
 
+def billing_dep(
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> BillingProvider:
+    return build_billing(settings)
+
+
 HIBPDep = Annotated[HIBPClient, Depends(hibp_client_dep)]
 TurnstileDep = Annotated[TurnstileVerifier, Depends(turnstile_dep)]
 RedisDep = Annotated[redis.Redis, Depends(redis_dep)]
@@ -58,6 +65,7 @@ SettingsDep = Annotated[Settings, Depends(get_settings)]
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
 EmailDep = Annotated[EmailSender, Depends(email_sender_dep)]
 DomainVerifierDep = Annotated[DomainVerifier, Depends(domain_verifier_dep)]
+BillingDep = Annotated[BillingProvider, Depends(billing_dep)]
 
 
 async def current_user(

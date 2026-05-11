@@ -41,6 +41,9 @@ class Settings(BaseSettings):
 
     stripe_secret_key: str = ""
     stripe_webhook_secret: str = ""
+    stripe_price_pro: str = ""
+    stripe_price_high_rpm: str = ""
+    stripe_billing_portal_return_url: str = ""
 
     session_secret: str = "please-change-me-in-production"
     allowed_origins: str = "http://localhost:5173"

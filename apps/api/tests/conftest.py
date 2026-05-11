@@ -20,6 +20,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from xavfsizmi_api.db.base import Base
 from xavfsizmi_api.db.session import get_session
 from xavfsizmi_api.deps import (
+    billing_dep,
     domain_verifier_dep,
     email_sender_dep,
     hibp_client_dep,
@@ -27,6 +28,7 @@ from xavfsizmi_api.deps import (
     turnstile_dep,
 )
 from xavfsizmi_api.main import app as real_app
+from xavfsizmi_api.services.billing import FakeBilling
 from xavfsizmi_api.services.domains import VerificationResult
 from xavfsizmi_api.services.email import EmailMessageSpec, InMemoryEmailSender
 
@@ -200,6 +202,11 @@ def fake_verifier() -> FakeDomainVerifier:
     return FakeDomainVerifier()
 
 
+@pytest.fixture
+def fake_billing() -> FakeBilling:
+    return FakeBilling()
+
+
 @pytest_asyncio.fixture
 async def db_session() -> AsyncIterator[AsyncSession]:
     """One isolated in-memory SQLite engine per test (with cross-dialect models)."""
@@ -222,6 +229,7 @@ def app(
     fake_turnstile: FakeTurnstile,
     fake_email: InMemoryEmailSender,
     fake_verifier: FakeDomainVerifier,
+    fake_billing: FakeBilling,
     db_session: AsyncSession,
 ) -> Iterator[FastAPI]:
     async def _hibp_override() -> Any:
@@ -241,6 +249,7 @@ def app(
     real_app.dependency_overrides[turnstile_dep] = lambda: fake_turnstile
     real_app.dependency_overrides[email_sender_dep] = lambda: fake_email
     real_app.dependency_overrides[domain_verifier_dep] = lambda: fake_verifier
+    real_app.dependency_overrides[billing_dep] = lambda: fake_billing
     real_app.dependency_overrides[get_session] = _session_override
     try:
         yield real_app
@@ -251,6 +260,7 @@ def app(
             turnstile_dep,
             email_sender_dep,
             domain_verifier_dep,
+            billing_dep,
             get_session,
         ):
             real_app.dependency_overrides.pop(dep, None)
@@ -263,6 +273,7 @@ def client(app: FastAPI) -> TestClient:
 
 __all__ = [
     "EmailMessageSpec",
+    "FakeBilling",
     "FakeDomainVerifier",
     "FakeHIBP",
     "FakeRedis",

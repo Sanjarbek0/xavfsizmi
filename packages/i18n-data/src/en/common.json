@@ -247,5 +247,85 @@
     "title": "Page not found",
     "message": "We couldn't find that page.",
     "home": "Back to home"
+  },
+  "confirm": {
+    "title": "Confirm your subscription",
+    "subtitle": "We'll verify the token and activate your subscription.",
+    "verifying": "Verifying…",
+    "missing_token": "No token found in the link.",
+    "error": "Could not confirm the link. It may have expired."
+  },
+  "unsubscribe": {
+    "title": "Unsubscribe",
+    "subtitle": "We'll stop sending you breach notifications.",
+    "processing": "Unsubscribing…",
+    "missing_token": "No token found in the link.",
+    "error": "Could not unsubscribe. The link may have expired."
+  },
+  "billing": {
+    "title": "Subscription & billing",
+    "subtitle": "Manage your current plan or upgrade to a paid tier.",
+    "current_plan": "Current plan",
+    "tier_label": "Tier",
+    "status_label": "Status",
+    "renews_label": "Next charge",
+    "no_renewal": "—",
+    "upgrade_title": "Change plan",
+    "upgrade_subtitle": "You'll be redirected to Stripe Checkout; you can cancel any time.",
+    "upgrade_pro": "Upgrade to Pro",
+    "upgrade_high_rpm": "Upgrade to High RPM",
+    "portal_title": "Stripe portal",
+    "portal_subtitle": "Manage payment methods and invoices in the Stripe portal.",
+    "open_portal": "Open portal"
+  },
+  "admin": {
+    "title": "Administrator console",
+    "subtitle": "System metrics, users, audit log, and breach catalogue.",
+    "forbidden_title": "Access denied",
+    "forbidden_detail": "You don't have administrator privileges. Contact us if you think this is wrong.",
+    "tabs": {
+      "metrics": "Metrics",
+      "users": "Users",
+      "audit": "Audit",
+      "breaches": "Breaches"
+    },
+    "metrics": {
+      "users": "Users",
+      "api_keys": "API keys",
+      "domains": "Domains",
+      "subscribers": "Subscribers",
+      "cached_breaches": "Cached breaches"
+    },
+    "users": {
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "created": "Created",
+      "actions": "Actions",
+      "admin": "Administrator",
+      "user": "User",
+      "active": "Active",
+      "blocked": "Blocked",
+      "block": "Block",
+      "unblock": "Unblock"
+    },
+    "audit": {
+      "when": "When",
+      "action": "Action",
+      "target": "Target",
+      "actor": "IP"
+    },
+    "breaches": {
+      "name_placeholder": "Breach name (e.g. Adobe)",
+      "title_placeholder": "Title",
+      "domain_placeholder": "Domain",
+      "date_placeholder": "Date (YYYY-MM-DD)",
+      "description_placeholder": "Short description",
+      "save": "Save / upsert",
+      "col_name": "Name",
+      "col_title": "Title",
+      "col_domain": "Domain",
+      "col_date": "Date"
+    }
   }
 }
