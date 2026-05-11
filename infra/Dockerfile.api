@@ -1,25 +1,83 @@
-FROM python:3.12-slim AS base
+# syntax=docker/dockerfile:1.7
+#
+# Multi-stage production image for the Xavfsizmi FastAPI backend.
+#
+# Stage 1 (builder): installs uv, syncs the locked virtualenv into /opt/venv.
+# Stage 2 (runtime):  minimal slim image with the venv copied in, runs as a
+# non-root `app` user, exposes 8000 and starts uvicorn.
+#
+# Build context MUST be the repo root so we can copy apps/api/* paths.
+
+# -----------------------------------------------------------------------------
+# Builder
+# -----------------------------------------------------------------------------
+FROM python:3.12-slim AS builder
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     UV_LINK_MODE=copy \
-    UV_PROJECT_ENVIRONMENT=/opt/venv
+    UV_PROJECT_ENVIRONMENT=/opt/venv \
+    UV_COMPILE_BYTECODE=1
 
+# Build deps for asyncpg, argon2, cryptography wheels.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl ca-certificates \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=ghcr.io/astral-sh/uv:0.5.11 /uv /usr/local/bin/uv
 
+WORKDIR /build
+
+# Install runtime deps in a separate layer (cache friendly).
+COPY apps/api/pyproject.toml apps/api/uv.lock* ./
+RUN uv sync --frozen --no-install-project --no-dev --no-editable \
+    || uv sync --no-dev --no-editable
+
+# Copy the source and install the project as a regular (non-editable) wheel
+# so /opt/venv is self-contained and the runtime stage doesn't need /build/.
+COPY apps/api/ ./
+RUN uv sync --frozen --no-dev --no-editable \
+    || uv sync --no-dev --no-editable
+
+# -----------------------------------------------------------------------------
+# Runtime
+# -----------------------------------------------------------------------------
+FROM python:3.12-slim AS runtime
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/opt/venv/bin:${PATH}" \
+    UV_PROJECT_ENVIRONMENT=/opt/venv
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        tini \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --system --gid 1001 app \
+    && useradd --system --uid 1001 --gid app --home /app --shell /sbin/nologin app
+
 WORKDIR /app
 
-COPY apps/api/pyproject.toml apps/api/uv.lock* ./
-RUN uv sync --frozen --no-install-project --no-dev || uv sync --no-dev
+COPY --from=builder /opt/venv /opt/venv
+COPY --from=builder /build /app
 
-COPY apps/api/ ./
-RUN uv sync --frozen --no-dev || uv sync --no-dev
+# Helper script that runs Alembic migrations then starts uvicorn.
+COPY infra/api-entrypoint.sh /usr/local/bin/api-entrypoint
+RUN chmod +x /usr/local/bin/api-entrypoint \
+    && chown -R app:app /app
 
-ENV PATH="/opt/venv/bin:${PATH}"
+USER app
+
 EXPOSE 8000
-CMD ["uvicorn", "xavfsizmi_api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD curl --fail --silent --show-error http://localhost:8000/healthz || exit 1
+
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/api-entrypoint"]
+CMD ["uvicorn", "xavfsizmi_api.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips=*"]
