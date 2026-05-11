@@ -59,6 +59,9 @@ class FakeRedis:
         value = self._store[key][0]
         return str(value) if not isinstance(value, str) else value
 
+    async def ping(self) -> bool:
+        return True
+
     async def set(self, key: str, value: str, ex: int | None = None) -> None:
         deadline = time.time() + ex if ex is not None else None
         self._store[key] = (value, deadline)

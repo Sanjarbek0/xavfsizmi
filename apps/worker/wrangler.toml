@@ -1,6 +1,8 @@
 name = "xavfsizmi-passwords"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
+# Workers Logs lets `wrangler tail` show structured logs for production traffic.
+workers_dev = true
 
 [[r2_buckets]]
 binding = "PWNED_PASSWORDS"
@@ -9,3 +11,23 @@ preview_bucket_name = "xavfsizmi-pwned-passwords-dev"
 
 [vars]
 PADDING_MAX = "800"
+
+# ------------------------------------------------------------------------
+# Production overrides — bind a custom hostname and tighter padding.
+# Use:  pnpm --filter @xavfsizmi/worker exec wrangler deploy --env production
+# ------------------------------------------------------------------------
+[env.production]
+name = "xavfsizmi-passwords"
+workers_dev = false
+
+[env.production.vars]
+PADDING_MAX = "800"
+
+[[env.production.r2_buckets]]
+binding = "PWNED_PASSWORDS"
+bucket_name = "xavfsizmi-pwned-passwords"
+
+# Uncomment and set when you've added the route + zone in Cloudflare:
+# [[env.production.routes]]
+# pattern = "passwords.xavfsizmi.example/*"
+# zone_name = "xavfsizmi.example"

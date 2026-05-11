@@ -1,0 +1,39 @@
+# Caddy v2 reverse proxy in front of the Xavfsizmi web SPA and API.
+#
+# Caddy provisions TLS certificates from Let's Encrypt automatically for each
+# hostname; the `ACME_EMAIL` env var feeds the contact field.
+
+{
+    email {$ACME_EMAIL}
+    servers {
+        protocols h1 h2 h3
+    }
+}
+
+# Web SPA
+{$WEB_HOSTNAME} {
+    encode zstd gzip
+    reverse_proxy web:8080
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "camera=(), microphone=(), geolocation=()"
+        -Server
+    }
+}
+
+# API
+{$API_HOSTNAME} {
+    encode zstd gzip
+    reverse_proxy api:8000
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        -Server
+    }
+}
