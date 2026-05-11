@@ -461,3 +461,102 @@ export async function upsertAdminBreach(payload: AdminBreachRow): Promise<AdminB
     body: JSON.stringify(payload),
   });
 }
+
+export interface AdminCsvImportResponse {
+  inserted: number;
+  updated: number;
+  skipped: number;
+  dry_run: boolean;
+  headers: string[];
+  errors: { line: number; message: string }[];
+  inserted_names: string[];
+  updated_names: string[];
+}
+
+export async function uploadAdminBreachesCsv(
+  file: File,
+  options: { dryRun?: boolean } = {},
+): Promise<AdminCsvImportResponse> {
+  const form = new FormData();
+  form.append('file', file);
+  const qs = options.dryRun ? '?dry_run=true' : '';
+  const res = await fetch(`${API_BASE}/v1/admin/breaches/upload${qs}`, {
+    method: 'POST',
+    body: form,
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    const problem = await readProblem(res);
+    const message = problem?.detail ?? problem?.title ?? `HTTP ${res.status}`;
+    throw new ApiError(res.status, message, problem);
+  }
+  return (await res.json()) as AdminCsvImportResponse;
+}
+
+export interface AdminDispatchRecipient {
+  email: string;
+  sent: boolean;
+  error: string | null;
+}
+
+export interface AdminDispatchResponse {
+  breach_name: string;
+  breach_title: string;
+  total_subscribers: number;
+  sent: number;
+  failed: number;
+  skipped: number;
+  dry_run: boolean;
+  recipients: AdminDispatchRecipient[];
+}
+
+export async function dispatchAdminNotifications(payload: {
+  breach_name: string;
+  dry_run?: boolean;
+  limit?: number | null;
+}): Promise<AdminDispatchResponse> {
+  return callJson<AdminDispatchResponse>('/v1/admin/notifications/dispatch', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export interface AdminDailyPoint {
+  day: string;
+  count: number;
+}
+
+export interface AdminUserStats {
+  total_users: number;
+  blocked_users: number;
+  admin_users: number;
+  active_subscribers: number;
+  pending_subscribers: number;
+  by_tier: Record<string, number>;
+  by_subscription_status: Record<string, number>;
+  signups_last_30_days: AdminDailyPoint[];
+}
+
+export interface AdminTopBreach {
+  name: string;
+  title: string | null;
+  pwn_count: number | null;
+  breach_date: string | null;
+}
+
+export interface AdminBreachStats {
+  total_breaches: number;
+  sensitive_breaches: number;
+  verified_breaches: number;
+  total_pwn_count: number;
+  top_by_pwn_count: AdminTopBreach[];
+  breaches_added_last_30_days: AdminDailyPoint[];
+}
+
+export async function fetchAdminUserStats(): Promise<AdminUserStats> {
+  return callJson<AdminUserStats>('/v1/admin/stats/users');
+}
+
+export async function fetchAdminBreachStats(topN = 10): Promise<AdminBreachStats> {
+  return callJson<AdminBreachStats>(`/v1/admin/stats/breaches?top_n=${topN}`);
+}

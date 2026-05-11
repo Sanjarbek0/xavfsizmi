@@ -71,6 +71,21 @@ ignore = [
     "RUF003",           # ditto, in comments
 ]
 
+[tool.ruff.lint.flake8-bugbear]
+# FastAPI uses sentinel calls in default arguments (Depends, Query, File, ...).
+# Whitelist them so B008 doesn't flag idiomatic router signatures.
+extend-immutable-calls = [
+    "fastapi.Depends",
+    "fastapi.Query",
+    "fastapi.Path",
+    "fastapi.Body",
+    "fastapi.Cookie",
+    "fastapi.Header",
+    "fastapi.File",
+    "fastapi.Form",
+    "fastapi.Security",
+]
+
 [tool.ruff.format]
 quote-style = "double"
 

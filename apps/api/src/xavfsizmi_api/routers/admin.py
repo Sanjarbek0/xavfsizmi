@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, File, Query, Request, UploadFile
 from pydantic import BaseModel, Field
 from sqlalchemy import desc, func, select
 
@@ -20,8 +20,11 @@ from ..db.models import (
     NotificationSubscription,
     User,
 )
-from ..deps import CurrentUserDep, SessionDep
+from ..deps import CurrentUserDep, EmailDep, SessionDep, SettingsDep
+from ..services.admin_stats import compute_breach_stats, compute_user_stats
 from ..services.audit import write_audit
+from ..services.csv_breach_import import import_breaches, parse_breach_csv
+from ..services.notifications_dispatch import dispatch_breach_notifications
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -277,6 +280,267 @@ def _user_row(record: User) -> AdminUserRow:
         is_blocked=record.is_blocked,
         created_at=record.created_at,
         last_login_at=record.last_login_at,
+    )
+
+
+# ---------------------------------------------------------------------------
+# CSV breach import
+# ---------------------------------------------------------------------------
+
+
+class CsvImportErrorOut(BaseModel):
+    line: int
+    message: str
+
+
+class CsvImportResponse(BaseModel):
+    inserted: int
+    updated: int
+    skipped: int
+    dry_run: bool
+    headers: list[str]
+    errors: list[CsvImportErrorOut]
+    inserted_names: list[str]
+    updated_names: list[str]
+
+
+@router.post("/breaches/upload", response_model=CsvImportResponse)
+async def upload_breaches_csv(
+    request: Request,
+    user: CurrentUserDep,
+    session: SessionDep,
+    file: UploadFile = File(...),
+    dry_run: bool = Query(default=False),
+) -> CsvImportResponse:
+    _require_admin(user)
+    body = await file.read()
+    if not body:
+        raise ProblemError(
+            status=400,
+            title_key="admin.csv.empty.title",
+            detail_key="admin.csv.empty.detail",
+        )
+
+    parsed = parse_breach_csv(body)
+    blocking = [
+        e
+        for e in parsed.errors
+        if e.message.startswith("missing_required_column") or e.message == "empty_file"
+    ]
+    if blocking:
+        raise ProblemError(
+            status=400,
+            title_key="admin.csv.invalid.title",
+            detail_key="admin.csv.invalid.detail",
+            extras={
+                "headers": parsed.headers,
+                "errors": [{"line": e.line, "message": e.message} for e in parsed.errors],
+            },
+        )
+
+    outcome = await import_breaches(session, parsed.rows, dry_run=dry_run)
+
+    if not dry_run and (outcome.inserted or outcome.updated):
+        await write_audit(
+            session,
+            actor_user_id=user.id,
+            actor_ip=client_ip(request),
+            action="admin.breaches.csv_upload",
+            target_type="breach",
+            target_id=None,
+            detail={
+                "inserted": outcome.inserted,
+                "updated": outcome.updated,
+                "filename": file.filename,
+            },
+        )
+
+    return CsvImportResponse(
+        inserted=outcome.inserted,
+        updated=outcome.updated,
+        skipped=len(parsed.errors),
+        dry_run=dry_run,
+        headers=parsed.headers,
+        errors=[CsvImportErrorOut(line=e.line, message=e.message) for e in parsed.errors],
+        inserted_names=outcome.inserted_names,
+        updated_names=outcome.updated_names,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Manual breach notification dispatch
+# ---------------------------------------------------------------------------
+
+
+class DispatchRequest(BaseModel):
+    breach_name: str = Field(min_length=1, max_length=64)
+    dry_run: bool = False
+    limit: int | None = Field(default=None, ge=1, le=10_000)
+
+
+class DispatchRecipient(BaseModel):
+    email: str
+    sent: bool
+    error: str | None = None
+
+
+class DispatchResponse(BaseModel):
+    breach_name: str
+    breach_title: str
+    total_subscribers: int
+    sent: int
+    failed: int
+    skipped: int
+    dry_run: bool
+    recipients: list[DispatchRecipient]
+
+
+def _frontend_base(request: Request, settings_origins: list[str]) -> str:
+    origin = request.headers.get("origin")
+    if origin:
+        return origin
+    if settings_origins:
+        return settings_origins[0]
+    return "http://localhost:5173"
+
+
+@router.post("/notifications/dispatch", response_model=DispatchResponse)
+async def dispatch_notifications(
+    payload: DispatchRequest,
+    request: Request,
+    user: CurrentUserDep,
+    session: SessionDep,
+    settings: SettingsDep,
+    email: EmailDep,
+) -> DispatchResponse:
+    _require_admin(user)
+    base = _frontend_base(request, settings.allowed_origins_list)
+    outcome = await dispatch_breach_notifications(
+        session,
+        email,
+        breach_name=payload.breach_name,
+        base_url=base,
+        dry_run=payload.dry_run,
+        limit=payload.limit,
+    )
+    if outcome is None:
+        raise ProblemError(
+            status=404,
+            title_key="admin.dispatch.unknown_breach.title",
+            detail_key="admin.dispatch.unknown_breach.detail",
+        )
+
+    if not payload.dry_run:
+        await write_audit(
+            session,
+            actor_user_id=user.id,
+            actor_ip=client_ip(request),
+            action="admin.notifications.dispatch",
+            target_type="breach",
+            target_id=outcome.breach_name,
+            detail={
+                "sent": outcome.sent,
+                "failed": outcome.failed,
+                "total": outcome.total_subscribers,
+                "limit": payload.limit,
+            },
+        )
+
+    return DispatchResponse(
+        breach_name=outcome.breach_name,
+        breach_title=outcome.breach_title,
+        total_subscribers=outcome.total_subscribers,
+        sent=outcome.sent,
+        failed=outcome.failed,
+        skipped=outcome.skipped,
+        dry_run=outcome.dry_run,
+        recipients=[
+            DispatchRecipient(email=r.email, sent=r.sent, error=r.error)
+            for r in outcome.per_recipient
+        ],
+    )
+
+
+# ---------------------------------------------------------------------------
+# Stats
+# ---------------------------------------------------------------------------
+
+
+class StatsDailyPoint(BaseModel):
+    day: str
+    count: int
+
+
+class StatsTopBreach(BaseModel):
+    name: str
+    title: str | None
+    pwn_count: int | None
+    breach_date: str | None
+
+
+class UserStatsResponse(BaseModel):
+    total_users: int
+    blocked_users: int
+    admin_users: int
+    active_subscribers: int
+    pending_subscribers: int
+    by_tier: dict[str, int]
+    by_subscription_status: dict[str, int]
+    signups_last_30_days: list[StatsDailyPoint]
+
+
+class BreachStatsResponse(BaseModel):
+    total_breaches: int
+    sensitive_breaches: int
+    verified_breaches: int
+    total_pwn_count: int
+    top_by_pwn_count: list[StatsTopBreach]
+    breaches_added_last_30_days: list[StatsDailyPoint]
+
+
+@router.get("/stats/users", response_model=UserStatsResponse)
+async def stats_users(user: CurrentUserDep, session: SessionDep) -> UserStatsResponse:
+    _require_admin(user)
+    stats = await compute_user_stats(session)
+    return UserStatsResponse(
+        total_users=stats.total_users,
+        blocked_users=stats.blocked_users,
+        admin_users=stats.admin_users,
+        active_subscribers=stats.active_subscribers,
+        pending_subscribers=stats.pending_subscribers,
+        by_tier=stats.by_tier,
+        by_subscription_status=stats.by_subscription_status,
+        signups_last_30_days=[
+            StatsDailyPoint(day=p.day, count=p.count) for p in stats.signups_last_30_days
+        ],
+    )
+
+
+@router.get("/stats/breaches", response_model=BreachStatsResponse)
+async def stats_breaches(
+    user: CurrentUserDep,
+    session: SessionDep,
+    top_n: int = Query(default=10, ge=1, le=100),
+) -> BreachStatsResponse:
+    _require_admin(user)
+    stats = await compute_breach_stats(session, top_n=top_n)
+    return BreachStatsResponse(
+        total_breaches=stats.total_breaches,
+        sensitive_breaches=stats.sensitive_breaches,
+        verified_breaches=stats.verified_breaches,
+        total_pwn_count=stats.total_pwn_count,
+        top_by_pwn_count=[
+            StatsTopBreach(
+                name=row.name,
+                title=row.title,
+                pwn_count=row.pwn_count,
+                breach_date=row.breach_date,
+            )
+            for row in stats.top_by_pwn_count
+        ],
+        breaches_added_last_30_days=[
+            StatsDailyPoint(day=p.day, count=p.count) for p in stats.breaches_added_last_30_days
+        ],
     )
 
 

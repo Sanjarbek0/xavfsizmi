@@ -317,7 +317,9 @@
       "metrics": "Metrikalar",
       "users": "Foydalanuvchilar",
       "audit": "Audit",
-      "breaches": "Sızıntılar"
+      "breaches": "Sızıntılar",
+      "stats": "Statistika",
+      "notify": "Xabarnoma"
     },
     "metrics": {
       "users": "Foydalanuvchilar",
@@ -355,7 +357,50 @@
       "col_name": "Nom",
       "col_title": "Sarlavha",
       "col_domain": "Domen",
-      "col_date": "Sana"
+      "col_date": "Sana",
+      "csv_heading": "CSV orqali ko'p-yozuv import",
+      "csv_hint": "Majburiy ustun: name. Ixtiyoriy: title, domain, breach_date, pwn_count, is_verified, is_sensitive, description, data_classes (nuqta-vergul orqali).",
+      "csv_choose": "CSV faylni tanlang",
+      "csv_dry_run": "Faqat sinov rejimi (yozilmasin)",
+      "csv_upload": "Yuklash",
+      "csv_result_inserted": "Qo'shildi",
+      "csv_result_updated": "Yangilandi",
+      "csv_result_skipped": "O'tkazib yuborilgan qatorlar",
+      "csv_result_dry_run": "Sinov rejimi — hech narsa saqlanmadi.",
+      "csv_no_file": "Avval fayl tanlang."
+    },
+    "stats": {
+      "heading_users": "Foydalanuvchilar",
+      "heading_breaches": "Sızıntılar katalogi",
+      "total_users": "Jami foydalanuvchilar",
+      "blocked_users": "Bloklangan",
+      "admin_users": "Administratorlar",
+      "active_subscribers": "Faol obunachilar",
+      "pending_subscribers": "Tasdiq kutilayotgan obunachilar",
+      "by_tier": "Tariflar bo'yicha faol API kalitlar",
+      "by_subscription_status": "Obuna holati",
+      "signups_chart": "Ro'yxatdan o'tishlar (so'nggi 30 kun)",
+      "breaches_chart": "Qo'shilgan sızıntılar (so'nggi 30 kun)",
+      "total_breaches": "Jami sızıntılar",
+      "sensitive_breaches": "Maxfiy",
+      "verified_breaches": "Tasdiqlangan",
+      "total_pwn_count": "Jami fosh bo'lgan yozuvlar",
+      "top_by_pwn_count": "Eng katta sızıntılar",
+      "pwn_count": "Fosh bo'lgan yozuvlar"
+    },
+    "notify": {
+      "heading": "Qo'lda yuborish",
+      "subtitle": "Tanlangan sızıntı haqida barcha tasdiqlangan obunachilarga xabar yuboring.",
+      "breach_label": "Sızıntı",
+      "limit_label": "Limit (ixtiyoriy)",
+      "dry_run": "Faqat sinov rejimi (yuborilmasin)",
+      "send": "Xabarni yuborish",
+      "preview": "Qabul qiluvchilarni ko'rish",
+      "subscribers_total": "Tasdiqlangan obunachilar soni",
+      "sent": "Yuborildi",
+      "failed": "Muvaffaqiyatsiz",
+      "skipped": "O'tkazildi",
+      "no_subscribers": "Hozircha tasdiqlangan obunachilar yo'q."
     }
   }
 }

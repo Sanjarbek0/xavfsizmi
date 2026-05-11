@@ -317,7 +317,9 @@
       "metrics": "Metrics",
       "users": "Users",
       "audit": "Audit",
-      "breaches": "Breaches"
+      "breaches": "Breaches",
+      "stats": "Stats",
+      "notify": "Notify"
     },
     "metrics": {
       "users": "Users",
@@ -355,7 +357,50 @@
       "col_name": "Name",
       "col_title": "Title",
       "col_domain": "Domain",
-      "col_date": "Date"
+      "col_date": "Date",
+      "csv_heading": "Bulk import (CSV)",
+      "csv_hint": "Required column: name. Optional: title, domain, breach_date, pwn_count, is_verified, is_sensitive, description, data_classes (semicolon-separated).",
+      "csv_choose": "Choose CSV file",
+      "csv_dry_run": "Dry-run only (don't write)",
+      "csv_upload": "Upload",
+      "csv_result_inserted": "Inserted",
+      "csv_result_updated": "Updated",
+      "csv_result_skipped": "Skipped rows",
+      "csv_result_dry_run": "Dry run — nothing was saved.",
+      "csv_no_file": "Select a file first."
+    },
+    "stats": {
+      "heading_users": "Users",
+      "heading_breaches": "Breach catalogue",
+      "total_users": "Total users",
+      "blocked_users": "Blocked",
+      "admin_users": "Administrators",
+      "active_subscribers": "Active subscribers",
+      "pending_subscribers": "Pending subscribers",
+      "by_tier": "Active API keys by tier",
+      "by_subscription_status": "Subscription status",
+      "signups_chart": "Signups (last 30 days)",
+      "breaches_chart": "Breaches added (last 30 days)",
+      "total_breaches": "Total breaches",
+      "sensitive_breaches": "Sensitive",
+      "verified_breaches": "Verified",
+      "total_pwn_count": "Total exposed records",
+      "top_by_pwn_count": "Largest breaches",
+      "pwn_count": "Exposed records"
+    },
+    "notify": {
+      "heading": "Manual dispatch",
+      "subtitle": "Send a chosen breach notification to every confirmed subscriber.",
+      "breach_label": "Breach",
+      "limit_label": "Limit (optional)",
+      "dry_run": "Dry-run only (don't send)",
+      "send": "Send notification",
+      "preview": "Preview recipients",
+      "subscribers_total": "Total confirmed subscribers",
+      "sent": "Sent",
+      "failed": "Failed",
+      "skipped": "Skipped",
+      "no_subscribers": "No confirmed subscribers yet."
     }
   }
 }

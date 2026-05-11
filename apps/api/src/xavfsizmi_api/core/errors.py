@@ -183,6 +183,36 @@ _PROBLEM_MESSAGES: dict[str, dict[i18n.Locale, str]] = {
         "ru": "Подпись Stripe не прошла проверку.",
         "en": "Stripe signature could not be verified.",
     },
+    "admin.csv.empty.title": {
+        "uz": "Fayl bo'sh",
+        "ru": "Файл пуст",
+        "en": "Empty file",
+    },
+    "admin.csv.empty.detail": {
+        "uz": "Yuklangan CSV fayli bo'sh.",
+        "ru": "Загруженный CSV-файл пуст.",
+        "en": "The uploaded CSV file is empty.",
+    },
+    "admin.csv.invalid.title": {
+        "uz": "CSV fayl yaroqsiz",
+        "ru": "Неверный CSV-файл",
+        "en": "Invalid CSV file",
+    },
+    "admin.csv.invalid.detail": {
+        "uz": "CSV faylida `name` ustuni majburiy. Sarlavhalarni tekshiring.",
+        "ru": "В CSV обязательна колонка `name`. Проверьте заголовки.",
+        "en": "CSV must include a `name` column. Check the headers.",
+    },
+    "admin.dispatch.unknown_breach.title": {
+        "uz": "Sızıntı topilmadi",
+        "ru": "Утечка не найдена",
+        "en": "Breach not found",
+    },
+    "admin.dispatch.unknown_breach.detail": {
+        "uz": "Kataloglangan sızıntılar orasida bunday yozuv yo'q.",
+        "ru": "В каталоге нет такой записи об утечке.",
+        "en": "No cached breach matches that name.",
+    },
 }
 
 
