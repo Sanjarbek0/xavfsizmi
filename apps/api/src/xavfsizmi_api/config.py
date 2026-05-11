@@ -54,6 +54,15 @@ class Settings(BaseSettings):
     rl_api_pro: int = Field(default=100, ge=1)
     rl_api_high_rpm: int = Field(default=600, ge=1)
 
+    # Observability
+    sentry_dsn: str = ""
+    sentry_traces_sample_rate: float = Field(default=0.0, ge=0.0, le=1.0)
+    log_json: bool = True
+    metrics_enabled: bool = True
+    # If non-empty, ``GET /metrics`` requires an ``Authorization: Bearer <token>``
+    # header (handy when the metrics endpoint is exposed publicly).
+    metrics_token: str = ""
+
     @property
     def allowed_origins_list(self) -> list[str]:
         return [o.strip() for o in self.allowed_origins.split(",") if o.strip()]

@@ -10,6 +10,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
 from .core.errors import install_problem_handlers
+from .core.observability import (
+    RequestObservabilityMiddleware,
+    configure_logging,
+    init_sentry,
+)
 from .routers import (
     admin,
     api_keys,
@@ -18,6 +23,7 @@ from .routers import (
     breaches,
     domains,
     health,
+    metrics,
     notifications,
     passwords,
     public_api,
@@ -32,11 +38,18 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 def create_app() -> FastAPI:
     settings = get_settings()
+    configure_logging(level=settings.log_level, json_logs=settings.log_json)
+    init_sentry(
+        dsn=settings.sentry_dsn,
+        env=settings.env,
+        traces_sample_rate=settings.sentry_traces_sample_rate,
+    )
     app = FastAPI(
         title=f"{settings.brand_name} API",
         version="0.1.0",
         lifespan=lifespan,
     )
+    app.add_middleware(RequestObservabilityMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.allowed_origins_list,
@@ -47,6 +60,7 @@ def create_app() -> FastAPI:
     install_problem_handlers(app)
 
     app.include_router(health.router)
+    app.include_router(metrics.router)
     app.include_router(breaches.router, prefix="/v1")
     app.include_router(passwords.router, prefix="/v1")
     app.include_router(notifications.router, prefix="/v1")

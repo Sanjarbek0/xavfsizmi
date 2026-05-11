@@ -25,6 +25,8 @@ dependencies = [
     "python-dateutil>=2.9.0.post0",
     "dnspython>=2.7.0",
     "anyio>=4.7.0",
+    "prometheus-client>=0.21.1",
+    "sentry-sdk[fastapi]>=2.19.2",
 ]
 
 [dependency-groups]

@@ -1,0 +1,19 @@
+{
+  "name": "@xavfsizmi/e2e",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Playwright end-to-end tests against the Xavfsizmi web app.",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "report": "playwright show-report",
+    "install-browsers": "playwright install --with-deps chromium",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo 'no lint'"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^22.10.5",
+    "typescript": "5.7.2"
+  }
+}
