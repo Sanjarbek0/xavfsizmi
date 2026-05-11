@@ -1,0 +1,121 @@
+# Production docker-compose for self-hosting Xavfsizmi (Hetzner / Render-like VM).
+#
+# Usage:
+#   1. Copy `.env.prod.example` to `.env.prod` and fill in real values.
+#   2. From the repo root:
+#        docker compose --env-file infra/.env.prod -f infra/docker-compose.prod.yml up -d --build
+#   3. Caddy will provision Let's Encrypt certificates for both the API and web
+#      hostnames automatically; make sure the DNS A records point at the host.
+#
+# Caddy terminates TLS and proxies:
+#   ${WEB_HOSTNAME} -> web:8080   (SPA)
+#   ${API_HOSTNAME} -> api:8000   (FastAPI)
+#
+# The DB and Redis are not exposed to the host network in production; only the
+# api container can reach them.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-xavfsizmi}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?missing POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-xavfsizmi}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-xavfsizmi} -d ${POSTGRES_DB:-xavfsizmi}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.api
+    image: xavfsizmi/api:latest
+    restart: unless-stopped
+    environment:
+      ENV: production
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      BRAND_NAME: ${BRAND_NAME:-Xavfsizmi}
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-xavfsizmi}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-xavfsizmi}
+      REDIS_URL: redis://redis:6379/0
+      HIBP_API_KEY: ${HIBP_API_KEY:?missing HIBP_API_KEY}
+      HIBP_BASE_URL: ${HIBP_BASE_URL:-https://haveibeenpwned.com/api/v3}
+      HIBP_USER_AGENT: ${HIBP_USER_AGENT:-xavfsizmi/0.1}
+      TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+      SMTP_HOST: ${SMTP_HOST:?missing SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:?missing SMTP_FROM}
+      SMTP_TLS: ${SMTP_TLS:-true}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      STRIPE_PRICE_PRO: ${STRIPE_PRICE_PRO:-}
+      STRIPE_PRICE_HIGH_RPM: ${STRIPE_PRICE_HIGH_RPM:-}
+      STRIPE_BILLING_PORTAL_RETURN_URL: ${STRIPE_BILLING_PORTAL_RETURN_URL:-}
+      SESSION_SECRET: ${SESSION_SECRET:?missing SESSION_SECRET}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:?missing ALLOWED_ORIGINS}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      RL_LOOKUP_PER_IP: ${RL_LOOKUP_PER_IP:-20}
+      RL_API_FREE: ${RL_API_FREE:-10}
+      RL_API_PRO: ${RL_API_PRO:-100}
+      RL_API_HIGH_RPM: ${RL_API_HIGH_RPM:-600}
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-1}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.web
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:?missing VITE_API_BASE_URL}
+        VITE_PASSWORDS_BASE_URL: ${VITE_PASSWORDS_BASE_URL:?missing VITE_PASSWORDS_BASE_URL}
+        VITE_TURNSTILE_SITE_KEY: ${VITE_TURNSTILE_SITE_KEY:-}
+        VITE_BRAND_NAME: ${VITE_BRAND_NAME:-Xavfsizmi}
+    image: xavfsizmi/web:latest
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    environment:
+      WEB_HOSTNAME: ${WEB_HOSTNAME:?missing WEB_HOSTNAME}
+      API_HOSTNAME: ${API_HOSTNAME:?missing API_HOSTNAME}
+      ACME_EMAIL: ${ACME_EMAIL:?missing ACME_EMAIL}
+    depends_on:
+      - web
+      - api
+
+volumes:
+  postgres-data:
+  redis-data:
+  caddy-data:
+  caddy-config:

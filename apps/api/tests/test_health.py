@@ -16,3 +16,10 @@ def test_version() -> None:
     assert r.status_code == 200
     body = r.json()
     assert "version" in body and "brand" in body
+
+
+def test_readyz_returns_ok_when_dependencies_pass(client: TestClient) -> None:
+    r = client.get("/readyz")
+    assert r.status_code == 200
+    body = r.json()
+    assert body == {"status": "ok", "database": "ok", "redis": "ok"}

@@ -1,0 +1,49 @@
+# Keep Docker build contexts small and reproducible. The deps stage installs
+# node_modules / .venv inside the image; never carry the host's copy in.
+
+# Node
+**/node_modules
+.pnpm-store
+.pnp.*
+.yarn
+
+# Python
+**/__pycache__
+**/*.py[cod]
+**/.venv
+**/venv
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/.coverage
+**/htmlcov
+
+# Build outputs
+**/dist
+**/build
+**/.next
+**/out
+**/.turbo
+**/.wrangler
+**/.vite
+**/coverage
+
+# Local-only
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Git / CI / editor
+.git
+.github
+.gitignore
+.editorconfig
+.prettierrc.json
+.prettierignore
+*.swp
+.DS_Store
+.idea
+.vscode
