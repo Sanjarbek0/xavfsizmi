@@ -53,7 +53,15 @@ WORKDIR /repo
 
 RUN corepack enable && corepack prepare pnpm@9.15.1 --activate
 
+# Pull the entire workspace's resolved dependency graph from the deps stage.
+# pnpm hoists most deps into /repo/node_modules but every workspace package
+# has its own node_modules of symlinks too, so we have to bring them all.
 COPY --from=deps /repo/node_modules ./node_modules
+COPY --from=deps /repo/apps/web/node_modules ./apps/web/node_modules
+COPY --from=deps /repo/packages/shared-types/node_modules ./packages/shared-types/node_modules
+COPY --from=deps /repo/packages/i18n-data/node_modules ./packages/i18n-data/node_modules
+COPY --from=deps /repo/packages/eslint-config/node_modules ./packages/eslint-config/node_modules
+
 COPY . .
 
 RUN pnpm --filter @xavfsizmi/web build
