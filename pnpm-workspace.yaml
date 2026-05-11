@@ -1,4 +1,5 @@
 packages:
   - "apps/web"
   - "apps/worker"
+  - "apps/e2e"
   - "packages/*"
